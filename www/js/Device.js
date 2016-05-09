@@ -1,4 +1,4 @@
-angular.module('starter.DeviceUtils', [])
+angular.module('trackme.DeviceUtils', [])
 
 .factory('Device', function(){
 

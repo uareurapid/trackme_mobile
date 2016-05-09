@@ -20,10 +20,12 @@
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
+    <script src="js/angular-cookies.min.js"></script>
     <script src="js/app.js"></script>
     <script src="js/Device.js"></script>
+    <script src="js/DevicesModule.js"></script>
   </head>
-  <body ng-app="starter" ng-controller="MainController">
+  <body ng-app="trackme" ng-controller="MainController">
 
   <!--
      The nav bar that will be updated as we navigate between views.
@@ -47,6 +49,7 @@
           <div class="buttons">
             <a ui-sref="login">Log in</a>
             <a ui-sref="signup">Sign up</a>
+            <a ui-sref="devices">Get devices</a>
           </div>
         </div>
       </ion-content>
@@ -75,17 +78,82 @@
   <script id="login.html" type="text/ng-template">
     <ion-view view-title="Log in">
       <ion-content class="padding">
-        <form ng-model="formLogin" ng-submit="login()">
+        <form ng-model="formLogin" ng-submit="performLogin()">
           <div class="list">
             <label class="item item-input">
-              <input type="email" placeholder="Email" ng-model="formLogin.user">
+              <input type="email" placeholder="Email" name="email" ng-model="formLogin.user">
             </label>
             <label class="item item-input">
-              <input type="password" placeholder="Password" ng-model="formLogin.pass">
+              <input type="password" placeholder="Password" name="password" ng-model="formLogin.pass">
             </label>
           </div>
           <input type="submit" class="button button-royal button-block" value="Log in"/>
         </form>
+      </ion-content>
+    </ion-view>
+  </script>
+
+  <script id="devices.html" type="text/ng-template">
+    <ion-view view-title="Home">
+      <ion-content class="padding" ng-controller="DevicesController">
+        <form ng-model="formDevices" ng-submit="getUserDevices()">
+          <div class="list">
+            <label class="item item-input">
+              <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
+            </label>
+
+
+            <table>
+              <tr>
+                <th>Device Id</th>
+                <th>Device Description</th>
+                <th>Device owner</th>
+              </tr>
+              <tr ng-repeat="device in devices">
+                <td>{{device.deviceId}}</td>
+                <td>{{device.deviceDescription}}</td>
+                <td>{{device.deviceOwner}}</td>
+              </tr>
+            </table>
+
+
+          </div>
+          <input type="submit" class="button button-royal button-block" value="Log in"/>
+        </form>
+      </ion-content>
+      </ion-content>
+    </ion-view>
+  </script>
+
+
+  <script id="trackables.html" type="text/ng-template">
+    <ion-view view-title="Home">
+      <ion-content class="padding" ng-controller="TrackablesController">
+        <form ng-model="formTrackables" ng-submit="getUserTrackables()">
+          <div class="list">
+            <label class="item item-input">
+              <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
+            </label>
+
+
+            <table>
+              <tr>
+                <th>Trackable Id</th>
+                <th>Trackable Description</th>
+                <th>Trackable owner</th>
+              </tr>
+              <tr ng-repeat="trackable in trackable">
+                <td>{{trackable.deviceId}}</td>
+                <td>{{trackable.deviceDescription}}</td>
+                <td>{{trackable.deviceOwner}}</td>
+              </tr>
+            </table>
+
+
+          </div>
+          <input type="submit" class="button button-royal button-block" value="Log in"/>
+        </form>
+      </ion-content>
       </ion-content>
     </ion-view>
   </script>

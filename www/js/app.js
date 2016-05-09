@@ -4,11 +4,13 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic','starter.DeviceUtils'])
+angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController','trackme.TrackablesController'])
 
 
-    .controller('MainController', function($scope) {
+    .controller('MainController', function($scope, $http, $state) {
 
+        var serverLogin = "http://localhost:8100/rlogin";//http://trackme.no-ip.net
+        var serverSignup = "http://localhost:8100/rsignup";//http://trackme.no-ip.net
         //store the main object on the scope
         $scope.formLogin = {};
 
@@ -17,9 +19,109 @@ angular.module('starter', ['ionic','starter.DeviceUtils'])
 
         $scope.formLogin.pass = "";
 
-        $scope.login = function() {
-          alert("do login " + $scope.formLogin.user + " " + $scope.formLogin.pass);
+
+        // process the form
+        $scope.performLogin = function() {
+
+            $http({
+                method  : 'POST',
+                url     : serverLogin,
+                transformRequest: function(obj) {
+                    var str = [];
+                    for(var p in obj)
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    return str.join("&");
+                },
+                data: {email: $scope.formLogin.user, password: $scope.formLogin.pass},
+                headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+            })
+            //$http.post(server, $scope.formLogin)
+                .success(function(data) {
+                    console.log(data);
+
+                    if (data.status) {
+
+                        console.log('response:' + JSON.stringify(data));
+
+                        // if successful, bind success message to message
+                        $scope.status = data.status;
+                        $scope.email = data.email;
+                        $scope.expires = data.expires;
+                        $scope.token = data.token;
+
+                        var userData = {
+                            status: data.status,
+                            email: data.email,
+                            expires: data.expires,
+                            token: data.token
+                        };
+
+
+                    window.localStorage.setItem( 'userData',JSON.stringify(userData));
+                        console.log("navigate to devices");
+                        $state.go('devices');
+
+                        //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
+
+                    }
+
+                    //http://blog.ionic.io/handling-cors-issues-in-ionic/
+                    //http://stackoverflow.com/questions/24710503/how-do-i-post-urlencoded-form-data-with-http-in-angularjs
+
+                });
         };
+
+        // process the form
+        $scope.performSignup = function() {
+
+            $http({
+                method  : 'POST',
+                url     : serverSignup,
+                transformRequest: function(obj) {
+                    var str = [];
+                    for(var p in obj)
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    return str.join("&");
+                },
+                data: {email: $scope.formLogin.user, password: $scope.formLogin.pass},
+                headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+            })
+                //$http.post(server, $scope.formLogin)
+                .success(function(data) {
+                    console.log(data);
+
+                    if (data.status) {
+
+                        console.log('response:' + JSON.stringify(data));
+
+                        // if successful, bind success message to message
+                        $scope.status = data.status;
+                        $scope.email = data.email;
+                        $scope.expires = data.expires;
+                        $scope.token = data.token;
+
+                        var userData = {
+                            status: data.status,
+                            email: data.email,
+                            expires: data.expires,
+                            token: data.token
+                        };
+
+
+                        window.localStorage.setItem( 'userData',JSON.stringify(userData));
+                        console.log("navigate to devices");
+                        $state.go('devices');
+
+                        //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
+
+                    }
+
+                    //http://blog.ionic.io/handling-cors-issues-in-ionic/
+                    //http://stackoverflow.com/questions/24710503/how-do-i-post-urlencoded-form-data-with-http-in-angularjs
+
+                });
+        };
+
     })
 
  .config(function($stateProvider, $urlRouterProvider) {
@@ -44,10 +146,24 @@ angular.module('starter', ['ionic','starter.DeviceUtils'])
             .state('signup', {
                 url: "/signup",
                 templateUrl: "signup.html"
+            })
+
+            .state('devices', {
+                url: "/devices",
+                templateUrl: "devices.html"
             });
+
+
+
 
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/splash');
+
+        /*var $cookies;
+        angular.injector(['ngCookies']).invoke(['$cookies', function(_$cookies_) {
+            $cookies = _$cookies_;
+        }]);*/
+
 
     })
 
@@ -113,9 +229,6 @@ angular.module('starter', ['ionic','starter.DeviceUtils'])
         function setPosition(lat, lng) {
             return new plugin.google.maps.LatLng(lat, lng);
         }
-    }
-      else {
-        alert("not phonegap");
     }
 
   });
