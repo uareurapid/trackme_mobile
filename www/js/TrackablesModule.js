@@ -3,9 +3,10 @@
  */
 
 //trackables controller
+
 angular.module('trackme.TrackablesController',[])
 
-.controller('TrackablesController',function ($scope, $cookies, $http) {
+.controller('TrackablesController',function ($scope, /*$cookies,*/ $http) {
 
     $scope.testGetProfile = function() {
         $scope.$emit("GetUserProfile", {});
@@ -60,7 +61,8 @@ angular.module('trackme.TrackablesController',[])
 
             console.log("getting all available trackables for username: " + userData.email);
 
-            var apiPath = 'http://localhost:8100/api/trackables?owner=' + userData.email;
+            var serverLocation = window.localStorage.getItem('serverLocation');
+            var apiPath = serverLocation +'/api/trackables?owner=' + userData.email;
             $http({
                 method  : 'GET',
                 url     : apiPath,
@@ -70,10 +72,10 @@ angular.module('trackme.TrackablesController',[])
                 .success(function(data) {
 
                     //reset all input fields, so we can add a new one again
-                    $scope.formTrackablesData.privacy = "Private";
-                    $scope.formTrackablesData.name = "";
-                    $scope.formTrackablesData.description = "";
-                    $scope.formTrackablesData.type = $scope.formTrackablesData.typeOptions[0];
+                    //$scope.formTrackablesData.privacy = "Private";
+                    //$scope.formTrackablesData.name = "";
+                    //$scope.formTrackablesData.description = "";
+                    //$scope.formTrackablesData.type = $scope.formTrackablesData.typeOptions[0];
                     //do not clear $scope.formTrackablesData.owner
 
                     //add new received data to the $scope var
@@ -89,7 +91,9 @@ angular.module('trackme.TrackablesController',[])
     };
 
     // when landing on the page, get the username, all his trackables, and then we show them!
-    $scope.getTrackableOwner($scope.getAllTrackables);
+    //$scope.getTrackableOwner($scope.getAllTrackables);
+
+    $scope.getAllTrackables();
 
     //############## CREATE NEW TRACKABLE ######################
     //this is actually the submit of the form

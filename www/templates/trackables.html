@@ -1,0 +1,31 @@
+<ion-view view-title="My Trackables">
+    <ion-content class="padding" ng-controller="TrackablesController">
+        <form ng-model="formTrackables" ng-submit="getAllTrackables()">
+            <div class="list">
+                <label class="item item-input">
+                    <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
+                </label>
+
+
+                <table>
+                    <tr>
+                        <th>Trackable privacy</th>
+                        <th>Trackable name</th>
+                        <th>Trackable description</th>
+                        <th>Trackable type</th>
+                    </tr>
+                    <tr ng-repeat="trackable in trackables">
+                        <td>{{trackable.privacy}}</td>
+                        <td>{{trackable.name}}</td>
+                        <td>{{trackable.description}}</td>
+                        <td>{{trackable.type}}</td>
+                    </tr>
+                </table>
+
+
+            </div>
+            <input type="submit" class="button button-royal button-block" value="Log in"/>
+        </form>
+    </ion-content>
+    </ion-content>
+</ion-view>

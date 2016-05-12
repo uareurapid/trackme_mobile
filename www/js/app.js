@@ -4,13 +4,24 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController','trackme.TrackablesController'])
+angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
+    'trackme.TrackablesController','trackme.MapController'])
 
 
-    .controller('MainController', function($scope, $http, $state) {
+    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate) {
 
-        var serverLogin = "http://localhost:8100/rlogin";//http://trackme.no-ip.net
-        var serverSignup = "http://localhost:8100/rsignup";//http://trackme.no-ip.net
+        if(!window.localStorage.getItem('serverLocation')) {
+            window.localStorage.setItem('serverLocation','http://localhost:8100');
+        }
+
+        $scope.toggleLeft = function() {
+            $ionicSideMenuDelegate.toggleLeft();
+        };
+
+        var serverLocation = window.localStorage.getItem('serverLocation');
+
+        var serverLogin = serverLocation +"/rlogin";//http://trackme.no-ip.net
+        var serverSignup = serverLocation + "/rsignup";//http://trackme.no-ip.net
         //store the main object on the scope
         $scope.formLogin = {};
 
@@ -58,8 +69,9 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
 
                     window.localStorage.setItem( 'userData',JSON.stringify(userData));
-                        console.log("navigate to devices");
-                        $state.go('devices');
+                        console.log("navigate to home page");
+                        //$state.go('devices');
+                        $state.go('app.home');
 
                         //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
 
@@ -110,8 +122,9 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
                         window.localStorage.setItem( 'userData',JSON.stringify(userData));
                         console.log("navigate to devices");
-                        $state.go('devices');
+                        //$state.go('devices');
 
+                        $state.go('app');
                         //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
 
                     }
@@ -124,6 +137,11 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
     })
 
+    .controller("HomeController", function($scope) {
+
+    })
+
+    //ANGULAR ROUTES
  .config(function($stateProvider, $urlRouterProvider) {
 
         // Ionic uses AngularUI Router which uses the concept of states
@@ -131,38 +149,98 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         // Set up the various states which the app can be in.
         // Each state's controller can be found in controllers.js
         $stateProvider
-            .state('splash', {
-                url: '/splash',
-                templateUrl: "splash.html"
+            .state('front', {
+                url: '/front',
+                templateUrl: "templates/front.html"
             })
 
             // setup an abstract state for the tabs directive
             .state('login', {
                 url: "/login",
-                templateUrl: "login.html"
+                templateUrl: "templates/login.html"
             })
 
             // setup an abstract state for the tabs directive
             .state('signup', {
                 url: "/signup",
-                templateUrl: "signup.html"
+                templateUrl: "templates/signup.html"
             })
 
-            .state('devices', {
+            .state('app', {
+                url: "/app",
+                abstract: true,
+                templateUrl: "templates/menu.html",
+            })
+
+            .state('app.devices', {
                 url: "/devices",
-                templateUrl: "devices.html"
+                views: {
+                    'menuContent': {
+                     templateUrl: "templates/devices.html"
+                    }
+                }
+
+            })
+
+            .state('app.trackables', {
+                url: "/trackables",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/trackables.html"
+                    }
+                }
+
+            })
+
+            .state('app.map', {
+                url: "/map",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/map.html"
+                    }
+                }
+
+            })
+
+            //this state has the 'app' state (which has the sidemenu) as its parent state
+            .state('app.home', {
+                url: "/home",
+                views: {
+                    'menuContent' :{
+                        templateUrl: "templates/home.html"
+                    }
+                }
             });
+
+
+
+            /*.state('app.home', {
+                url: "/home",
+                views: {
+                    'appContent' :{
+                        templateUrl: "home.html",
+                        controller : "HomeController"
+                    }
+                }
+            });*/
+
+        /*
+
+         //this state has no parent, so it uses 'index.html' as its template. The index page has no
+         //sidemenu in it
+         .state('page2', {
+         url: "/page2",
+         templateUrl: "templates/page2.html"
+         }
+         })
+         */
 
 
 
 
         // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/splash');
+        $urlRouterProvider.otherwise('/front');
 
-        /*var $cookies;
-        angular.injector(['ngCookies']).invoke(['$cookies', function(_$cookies_) {
-            $cookies = _$cookies_;
-        }]);*/
 
 
     })
@@ -173,8 +251,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
   $ionicPlatform.ready(function() {
 
-      var hello = Device.Hello();
-      console.log(hello);
+      console.log(Device.Hello());
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -185,51 +262,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
       StatusBar.styleDefault();
     }
 
-    // Getting the map selector in DOM
-    var div = document.getElementById("map_canvas");
 
-    if(Device.isPhoneGap) {
-        // Invoking Map using Google Map SDK v2 by dubcanada
-        var map = plugin.google.maps.Map.getMap(div,{
-            'camera': {
-                'latLng': setPosition(-19.9178713, -43.9603117),
-                'zoom': 10
-            }
-        });
-
-        // Capturing event when Map load are ready.
-        map.addEventListener(plugin.google.maps.event.MAP_READY, function(){
-
-            // Defining markers for demo
-            var markers = [{
-                position: setPosition(-19.9178713, -43.9603117),
-                title: "Marker 1"
-            }, {
-                position: setPosition(-19.8363826, -43.9787167),
-                title: "Marker 2"
-            }];
-
-            // Bind markers
-            for (var i = 0; i < markers.length; i++) {
-                map.addMarker({
-                    'marker': markers[i],
-                    'position': markers[i].position
-                }, function(marker) {
-
-                    // Defining event for each marker
-                    marker.on("click", function() {
-                        alert(marker.get('marker').title);
-                    });
-
-                });
-            }
-        });
-
-        // Function that return a LatLng Object to Map
-        function setPosition(lat, lng) {
-            return new plugin.google.maps.LatLng(lat, lng);
-        }
-    }
 
   });
 });

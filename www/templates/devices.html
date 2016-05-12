@@ -1,0 +1,29 @@
+<ion-view view-title="My Devices">
+    <ion-content class="padding" ng-controller="DevicesController">
+        <form ng-model="formDevices" ng-submit="getUserDevices()">
+            <div class="list">
+                <label class="item item-input">
+                    <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
+                </label>
+
+
+                <table>
+                    <tr>
+                        <th>Device Id</th>
+                        <th>Device Description</th>
+                        <th>Device owner</th>
+                    </tr>
+                    <tr ng-repeat="device in devices">
+                        <td>{{device.deviceId}}</td>
+                        <td>{{device.deviceDescription}}</td>
+                        <td>{{device.deviceOwner}}</td>
+                    </tr>
+                </table>
+
+
+            </div>
+            <input type="submit" class="button button-royal button-block" value="Log in"/>
+        </form>
+    </ion-content>
+    </ion-content>
+</ion-view>

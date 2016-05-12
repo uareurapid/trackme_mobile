@@ -24,6 +24,8 @@
     <script src="js/app.js"></script>
     <script src="js/Device.js"></script>
     <script src="js/DevicesModule.js"></script>
+    <script src="js/TrackablesModule.js"></script>
+    <script src="js/MapModule.js"></script>
   </head>
   <body ng-app="trackme" ng-controller="MainController">
 
@@ -41,131 +43,8 @@
   -->
   <ion-nav-view></ion-nav-view>
 
-  <script id="splash.html" type="text/ng-template">
-    <ion-view view-title="Trackme.io">
-      <ion-content class="padding" scroll="false">
-        <div id="splash-wrap">
-          <div id="logo"></div>
-          <div class="buttons">
-            <a ui-sref="login">Log in</a>
-            <a ui-sref="signup">Sign up</a>
-            <a ui-sref="devices">Get devices</a>
-          </div>
-        </div>
-      </ion-content>
-      </ion-pane>
-    </ion-view>
-  </script>
-
-  <script id="signup.html" type="text/ng-template">
-    <ion-view view-title="Sign up">
-      <ion-content class="padding">
-        <form ng-submit="signup()">
-          <div class="list">
-            <label class="item item-input">
-              <input type="email" placeholder="Email">
-            </label>
-            <label class="item item-input">
-              <input type="password" placeholder="Password">
-            </label>
-          </div>
-          <button class="button button-royal button-block">Sign up</button>
-        </form>
-      </ion-content>
-    </ion-view>
-  </script>
-
-  <script id="login.html" type="text/ng-template">
-    <ion-view view-title="Log in">
-      <ion-content class="padding">
-        <form ng-model="formLogin" ng-submit="performLogin()">
-          <div class="list">
-            <label class="item item-input">
-              <input type="email" placeholder="Email" name="email" ng-model="formLogin.user">
-            </label>
-            <label class="item item-input">
-              <input type="password" placeholder="Password" name="password" ng-model="formLogin.pass">
-            </label>
-          </div>
-          <input type="submit" class="button button-royal button-block" value="Log in"/>
-        </form>
-      </ion-content>
-    </ion-view>
-  </script>
-
-  <script id="devices.html" type="text/ng-template">
-    <ion-view view-title="Home">
-      <ion-content class="padding" ng-controller="DevicesController">
-        <form ng-model="formDevices" ng-submit="getUserDevices()">
-          <div class="list">
-            <label class="item item-input">
-              <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
-            </label>
+  <!-- TODO check http://codepen.io/calendee/pen/Fuejf/ -->
 
 
-            <table>
-              <tr>
-                <th>Device Id</th>
-                <th>Device Description</th>
-                <th>Device owner</th>
-              </tr>
-              <tr ng-repeat="device in devices">
-                <td>{{device.deviceId}}</td>
-                <td>{{device.deviceDescription}}</td>
-                <td>{{device.deviceOwner}}</td>
-              </tr>
-            </table>
-
-
-          </div>
-          <input type="submit" class="button button-royal button-block" value="Log in"/>
-        </form>
-      </ion-content>
-      </ion-content>
-    </ion-view>
-  </script>
-
-
-  <script id="trackables.html" type="text/ng-template">
-    <ion-view view-title="Home">
-      <ion-content class="padding" ng-controller="TrackablesController">
-        <form ng-model="formTrackables" ng-submit="getUserTrackables()">
-          <div class="list">
-            <label class="item item-input">
-              <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
-            </label>
-
-
-            <table>
-              <tr>
-                <th>Trackable Id</th>
-                <th>Trackable Description</th>
-                <th>Trackable owner</th>
-              </tr>
-              <tr ng-repeat="trackable in trackable">
-                <td>{{trackable.deviceId}}</td>
-                <td>{{trackable.deviceDescription}}</td>
-                <td>{{trackable.deviceOwner}}</td>
-              </tr>
-            </table>
-
-
-          </div>
-          <input type="submit" class="button button-royal button-block" value="Log in"/>
-        </form>
-      </ion-content>
-      </ion-content>
-    </ion-view>
-  </script>
-    <!--<ion-pane>
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Ionic Google Maps Starter</h1>
-      </ion-header-bar>
-      <ion-content>
-          <!--<div id="map_canvas"></div>-->
-     <!-- </ion-content>
-    </ion-pane>
-
-    -->
   </body>
 </html>

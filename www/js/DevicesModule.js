@@ -39,7 +39,8 @@ angular.module('trackme.DevicesController', [])
         if(userData) {
             console.log("getting all available devices for username: " + userData.email);
 
-            var apiPath = 'http://localhost:8100/api/devices?owner=' + userData.email;
+            var serverLocation = window.localStorage.getItem('serverLocation');
+            var apiPath = serverLocation +'/api/devices?owner=' + userData.email;
 
             $http({
                 method  : 'GET',
