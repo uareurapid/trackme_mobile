@@ -1,0 +1,39 @@
+<ion-view view-title="Add Trackables">
+    <ion-content class="padding" ng-controller="TrackablesController">
+        <!-- FORM TO CREATE trackables -->
+        <div class="trackable-form s">
+            <!-- <div class="col-sm-8 col-sm-offset-2 text-center">-->
+            <form role="form">
+
+                <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                <label for="trackable_name">Name:</label>
+                <input id="trackable_name" type="text" class="form-control input-sm" placeholder="name" ng-model="formTrackablesData.name">
+
+                <label for="trackable-description">Description:</label>
+                <input id="trackable-description" type="text" class="form-control input-sm" placeholder="description" ng-model="formTrackablesData.description">
+
+                <label for="trackable-type">Type:</label>
+
+                <select id="trackable-type" ng-init="formTrackablesData.type = formTrackablesData.typeOptions[0]"
+                        ng-model="formTrackablesData.type"
+                        ng-options="option for option in formTrackablesData.typeOptions">
+                </select>
+
+                <!-- privacy options-->
+                <br/>
+                <label>Privacy:</label>
+                <div class="form-group">
+                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Private" ng-checked="true" ng-model="formTrackablesData.privacy">Private</label>
+                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Protected" ng-model="formTrackablesData.privacy">Protected</label>
+                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Public" ng-model="formTrackablesData.privacy">Public</label>
+                </div>
+                <!-- this is filled when the trackable is set to 'protected'-->
+                <!--<input name="trackable_unlockcode" id="trackable_unlockcode" type="hidden" size="20" value="" ng-model="formTrackablesData.unlockCode">-->
+                <br/>
+                <button type="submit" class="btn btn-primary btn-sm" ng-click="createTrackable()">Add trackable</button>
+            </form>
+            <!--</div>-->
+        </div>
+    </ion-content>
+    </ion-content>
+</ion-view>

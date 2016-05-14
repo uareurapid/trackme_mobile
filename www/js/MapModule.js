@@ -6,6 +6,13 @@ angular.module('trackme.MapController', ['ionic'])
 
 .controller('MapController',function ($scope, $http) {
 
+
+        //use the service broadcats approach to use functions of one controller into another one
+        $scope.$on("testme", function(){
+            console.log("broadcast event:::");
+            console.log("it worked");
+        });
+
         $scope.loadMap = function() {
             // Getting the map selector in DOM
             var div = document.getElementById("map_canvas");
@@ -52,6 +59,7 @@ angular.module('trackme.MapController', ['ionic'])
                 return new plugin.google.maps.LatLng(lat, lng);
             }
         };
+
 
 
 });

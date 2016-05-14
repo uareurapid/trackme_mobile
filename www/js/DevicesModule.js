@@ -8,6 +8,56 @@ angular.module('trackme.DevicesController', [])
 
     $scope.formData = {};
 
+
+    //will hold the devices
+    $scope.devices = [];
+    //filtering options
+    $scope.selectedDevice= "Show all";
+
+
+    $scope.deviceChanged = function(deviceFilter) {
+
+
+
+        var userData = JSON.parse( window.localStorage.getItem( 'userData'));
+        console.log("getting all available devices for username: " + userData.email);
+
+        var serverLocation = window.localStorage.getItem('serverLocation');
+        var apiPath = serverLocation +'/api/records';
+
+
+            if(deviceFilter==null) {
+                deviceFilter = "Show all";
+            }
+            else {
+                apiPath = apiPath + "?device_id=" + deviceFilter;
+            }
+            console.log("device changed to: " + deviceFilter);
+
+            //clear markers
+            var markers = [];
+            $http({
+                method  : 'GET',
+                url     : apiPath,
+                headers : { 'Authorization': 'Bearer ' + userData.token }
+                // set the headers
+            }).success(function(data) {
+                    $scope.records = data;
+                    console.log("received" + JSON.stringify(data));
+                    for(var i=0; i< data.length; i++) {
+
+                        //var latitude = data[i].latitude;
+                        //var longitude = data[i].longitude;
+                        //markers.push(createRecordMarker(i, latitude, longitude, $scope.map.bounds));
+                    }
+                    //$scope.refreshMap(markers);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+
+    };
+
     //all these stuff should be on the services, not on the controllers,
     //$http and $resource on services, $scope on controllers
     //like: https://scotch.io/tutorials/setting-up-a-mean-stack-single-page-application

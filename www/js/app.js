@@ -5,7 +5,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
-    'trackme.TrackablesController','trackme.MapController'])
+    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController'])
 
 
     .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate) {
@@ -13,6 +13,19 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         if(!window.localStorage.getItem('serverLocation')) {
             window.localStorage.setItem('serverLocation','http://localhost:8100');
         }
+
+        //start closed
+        $scope.isMapItemOpened = false;
+
+        //when i click to expand the map item
+        $scope.toggleMapItem = function() {
+            console.log("map toogled");
+            $scope.isMapItemOpened = !$scope.isMapItemOpened;
+        };
+
+        $scope.isMapItemExpanded = function() {
+            return $scope.isMapItemOpened;
+        };
 
         $scope.toggleLeft = function() {
             $ionicSideMenuDelegate.toggleLeft();
@@ -172,6 +185,16 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 templateUrl: "templates/menu.html",
             })
 
+            .state('app.settings', {
+                url: "/settings",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/settings.html"
+                    }
+                }
+
+            })
+
             .state('app.devices', {
                 url: "/devices",
                 views: {
@@ -191,6 +214,18 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 }
 
             })
+
+            .state('app.add_trackables', {
+                url: "/add_trackables",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/add_trackables.html"
+                    }
+                }
+
+            })
+
+
 
             .state('app.map', {
                 url: "/map",

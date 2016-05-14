@@ -1,10 +1,10 @@
 <ion-view view-title="My Devices">
     <ion-content class="padding" ng-controller="DevicesController">
-        <form ng-model="formDevices" ng-submit="getUserDevices()">
+        <form ng-model="formDevices" ng-init="getUserDevices()">
             <div class="list">
-                <label class="item item-input">
+                <!--<label class="item item-input">
                     <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
-                </label>
+                </label>-->
 
 
                 <table>
@@ -22,7 +22,7 @@
 
 
             </div>
-            <input type="submit" class="button button-royal button-block" value="Log in"/>
+            <!--<input type="submit" class="button button-royal button-block" value="Log in"/>-->
         </form>
     </ion-content>
     </ion-content>

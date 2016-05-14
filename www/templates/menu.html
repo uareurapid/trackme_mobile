@@ -41,30 +41,36 @@
         <ion-header-bar class="bar-stable">
             <h1 class="title">Trackme.io</h1>
         </ion-header-bar>
-        <ion-content>
+        <ion-content ng-controller="MainController">
             <ion-list>
                 <!--<ion-item menu-close ng-click="login()">
                     Login
                 </ion-item>-->
-                <ion-item menu-close href="#/app/trackables">
+                <ion-item menu-close class="item-stable" href="#/app/trackables">
                     My Trackables
                 </ion-item>
-                <ion-item menu-close href="#/app/browse">
+                <ion-item menu-close href="#/app/add_trackables">
                     Add new Trackable
                 </ion-item>
                 <ion-item menu-close href="#/app/devices">
                     My Devices
                 </ion-item>
-                <ion-item menu-close href="#/app/devices">
+                <!--<ion-item menu-close href="#/app/devices">
                     Add new Device
+                </ion-item>-->
+                <ion-item menu-close href="#/app/map" ng-click="toggleMapItem()"
+                    ng-class="{active: isMapItemExpanded()}">
+                    <i class="icon" ng-class="isMapItemExpanded() ? 'ion-minus' : 'ion-plus'"></i>
+                    &nbsp;My Map
                 </ion-item>
-                <ion-item menu-close href="#/app/map">
-                    My Map
+                <ion-item class="item-accordion" ng-show="isMapItemExpanded()">
+                    <div ng-include src="'templates/filtering.html'"></div>
                 </ion-item>
+
                 <ion-item menu-close href="#/app/browse">
                     My Account
                 </ion-item>
-                <ion-item menu-close href="#/app/playlists">
+                <ion-item menu-close href="#/app/settings">
                     Settings
                 </ion-item>
 
