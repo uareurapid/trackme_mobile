@@ -4,11 +4,11 @@
   "proxies": [
       {
         "path": "/api",
-        "proxyUrl": "http://localhost:8080/api"
+        "proxyUrl": "http://trackme.no-ip.net:8080/api"
       },
       {
               "path": "/rlogin",
-              "proxyUrl": "http://localhost:8080/rlogin"
+              "proxyUrl": "http://trackme.no-ip.net:8080/rlogin"
       }
     ]
 }

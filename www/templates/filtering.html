@@ -1,7 +1,7 @@
 <ion-view view-title="Filter options">
         <ion-content class="padding">
             <!-- trackables list -->
-            <div class="panel panel-default">
+            <div class="panel panel-default" ng-controller="TrackablesController">
                 <div class="panel-heading">
                     <h4 class="panel-title" id="my_trackables">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">My Trackables ({{ trackables.length }})</a>
@@ -30,9 +30,10 @@
             </div>
             <!-- end trackables list -->
 
+            <p>&nbsp;</p>
             <!-- filter by device here -->
 
-            <div class="panel panel-default">
+            <div class="panel panel-default" ng-controller="DevicesController">
                 <div class="panel-heading">
                     <h4 class="panel-title" id="my_devices">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">My Devices ({{ devices.length }})</a>

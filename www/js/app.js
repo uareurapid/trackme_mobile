@@ -10,17 +10,21 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
     .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate) {
 
-        if(!window.localStorage.getItem('serverLocation')) {
-            window.localStorage.setItem('serverLocation','http://localhost:8100');
-        }
+
+        //if(!window.localStorage.getItem('serverLocation')) {
+            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//trackme.no-ip.net
+        //}
 
         //start closed
         $scope.isMapItemOpened = false;
 
         //when i click to expand the map item
         $scope.toggleMapItem = function() {
-            console.log("map toogled");
+            console.log("map toogled " + $state.is('app.map'));
             $scope.isMapItemOpened = !$scope.isMapItemOpened;
+            if($scope.isMapItemOpened) {
+                $state.go('app.map');
+            }
         };
 
         $scope.isMapItemExpanded = function() {
