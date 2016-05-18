@@ -55,16 +55,13 @@
                 <ion-item menu-close href="#/app/devices">
                     My Devices
                 </ion-item>
-                <ion-item menu-close href="#/app/map">
+                <ion-item menu-close href="#/app/add_devices">
                     Add new Device
                 </ion-item><!--href="#/app/map"-->
                 <ion-item menu-close ng-click="toggleMapItem()"
                     ng-class="{active: isMapItemExpanded()}">
                     <i class="icon" ng-class="isMapItemExpanded() ? 'ion-minus' : 'ion-plus'"></i>
                     &nbsp;My Map
-                    <!--<div class="filtering_options" ng-show="isMapItemExpanded()">
-                        <p>&nbsp;</p>
-                    </div>-->
                 </ion-item>
                 <ion-item class="item-accordion" ng-show="isMapItemExpanded()" ng-controller="MapController">
                     <!-- trackables list -->
@@ -131,9 +128,17 @@
                     </div>
                 </ion-item>
 
-                <ion-item menu-close href="#/app/browse">
+                <ion-item menu-close ng-click="toggleAccountItem()">
                     My Account
+                    <div>
+                    {{loggedin_user}}
+                    </div>
                 </ion-item>
+                <!-- TODO accordion with username<ion-item menu-close ng-click="toggleMapItem()"
+                          ng-class="{active: isMapItemExpanded()}">
+                    <i class="icon" ng-class="isMapItemExpanded() ? 'ion-minus' : 'ion-plus'"></i>
+                    &nbsp;My Map
+                </ion-item>-->
                 <ion-item menu-close href="#/app/settings">
                     Settings
                 </ion-item>

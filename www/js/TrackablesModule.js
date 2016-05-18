@@ -14,9 +14,6 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
 
     var serverLocation = window.localStorage.getItem('serverLocation');
 
-    console.log("trying it now....");
-    //$scope.testGetProfile();
-
     //store the main object on the scope
     $scope.formTrackablesData = {};
 
@@ -91,9 +88,8 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
     };
 
     // when landing on the page, get the username, all his trackables, and then we show them!
-    //$scope.getTrackableOwner($scope.getAllTrackables);
-
-    $scope.getAllTrackables();
+    // TODO this should be cached and loaded on demand, and not called all the time when the page loads
+    //$scope.getAllTrackables();
 
     //############## CREATE NEW TRACKABLE ######################
     //this is actually the submit of the form

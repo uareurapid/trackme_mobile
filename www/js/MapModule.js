@@ -68,8 +68,8 @@ angular.module('trackme.MapController', ['ionic'])
             var marker = {
                 //latitude: lat,
                 //longitude: lng,
-                position: $scope.setPosition(lat,lng),
-                title: 'm' + i,
+                'position': $scope.setPosition(lat,lng),
+                'title': 'marker_' + i,
                 /*options: {
                     labelContent : 'Paulo Cristo',
                     labelAnchor: "36 61",
@@ -82,19 +82,6 @@ angular.module('trackme.MapController', ['ionic'])
             marker[idKey] = i;
             return marker;
         };
-
-        /*$scope.map = {
-            center: {
-                latitude: 40.1451,
-                longitude: -99.6680
-            },
-            zoom: 4,
-            control:{},
-            bounds: {}
-        };
-        $scope.options = {
-            scrollwheel: true
-        };*/
 
         //call this
         $scope.refreshMap = function (newMarkers) {
@@ -110,15 +97,16 @@ angular.module('trackme.MapController', ['ionic'])
 
             for (var i = 0; i < $scope.mapMarkers.length; i++) {
                 $scope.map.addMarker({
-                    'marker': $scope.mapMarkers[i],
+                    'title': $scope.mapMarkers[i].title,
                     'position': $scope.mapMarkers[i].position
                 }, function(marker) {
 
                     // Defining event for each marker
-                    //marker.on("click", function() {
-                    //    alert(marker.get('marker').title);
-                    //});
-                    marker.showInfoWindow();
+                    marker.on("click", function() {
+                       // alert(marker.get('marker').title);
+                        marker.showInfoWindow();
+                    });
+
 
                 });
             }
@@ -135,8 +123,20 @@ angular.module('trackme.MapController', ['ionic'])
             // Invoking Map using Google Map SDK v2 by dubcanada
             var map = plugin.google.maps.Map.getMap(div,{
                 'camera': {
-                    'latLng': $scope.setPosition(-19.9178713, -43.9603117),
+                    'latLng': $scope.setPosition(32.779680, -79.935493),//this is the initial position
                     'zoom': 4
+                },
+                'controls': {
+                    'compass': true,
+                    'myLocationButton': true,
+                    'indoorPicker': true,
+                    'zoom': true
+                },
+                'gestures': {
+                    'scroll': true,
+                    'tilt': true,
+                    'rotate': true,
+                    'zoom': true
                 }
             });
             //setting the var available on $scope
@@ -411,7 +411,7 @@ angular.module('trackme.MapController', ['ionic'])
 
 
             var userData = JSON.parse( window.localStorage.getItem( 'userData'));
-            console.log("getting all available devices for username: " + userData.email);
+            console.log("mapmodule: getting all available devices for username: " + userData.email);
 
             var serverLocation = window.localStorage.getItem('serverLocation');
             var apiPath = serverLocation +'/api/records';
@@ -423,7 +423,7 @@ angular.module('trackme.MapController', ['ionic'])
             else {
                 apiPath = apiPath + "?device_id=" + deviceFilter;
             }
-            console.log("device changed to: " + deviceFilter);
+            console.log("device changed to: " + deviceFilter + " apiPath: " + apiPath);
 
             //clear markers
             var markers = [];

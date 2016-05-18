@@ -1,7 +1,7 @@
 <ion-view view-title="My Trackables">
-    <ion-content class="padding" ng-controller="TrackablesController">
+    <ion-content class="padding" ng-controller="TrackablesController" ng-init="getAllTrackables()">
 
-        <form ng-model="formTrackables" ng-init="getAllTrackables()">
+        <form ng-model="formTrackables">
             <div class="list">
                 <!--<label class="item item-input">
                     <input type="email" placeholder="owner" name="email" ng-model="formData.owner">

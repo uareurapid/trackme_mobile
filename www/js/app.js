@@ -15,8 +15,16 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//trackme.no-ip.net
         //}
 
+        $scope.rememberMe = true;
+
+        $scope.loggedin_user = "";
+
         //start closed
         $scope.isMapItemOpened = false;
+
+        $scope.toggleAccountItem = function() {
+          //TODO code me
+        };
 
         //when i click to expand the map item
         $scope.toggleMapItem = function() {
@@ -44,9 +52,20 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //default privacy level
         $scope.formLogin.user = "";
-
         $scope.formLogin.pass = "";
 
+        var credentials = window.localStorage.getItem( 'userCredentials');
+        if(credentials) {
+            credentials = JSON.parse(credentials);
+            $scope.formLogin.user = credentials.username;
+            $scope.formLogin.pass =  credentials.password;
+        }
+
+        //remember me option changed
+        $scope.rememberMeChanged =  function() {
+            $scope.rememberMe = !$scope.rememberMe;
+
+        };
 
         // process the form
         $scope.performLogin = function() {
@@ -71,6 +90,9 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
                         console.log('response:' + JSON.stringify(data));
 
+                        //to show on the account menu
+                        $scope.loggedin_user = data.email;
+
                         // if successful, bind success message to message
                         $scope.status = data.status;
                         $scope.email = data.email;
@@ -83,10 +105,26 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                             expires: data.expires,
                             token: data.token
                         };
+                    if($scope.rememberMe) {
+                        var userCredentials = {
+                            username: $scope.formLogin.user,
+                            password: $scope.formLogin.pass
+                        };
 
+                        //add to local storage
+                        window.localStorage.setItem( 'userCredentials',JSON.stringify(userCredentials));
+
+                    }
+                    else {
+                        //forget it
+                        if(window.localStorage.getItem('userCredentials')) {
+                            window.localStorage.removeItem('userCredentials');
+                        }
+
+                    }
 
                     window.localStorage.setItem( 'userData',JSON.stringify(userData));
-                        console.log("navigate to home page");
+                        console.log("navigate to home/map page");
                         //$state.go('devices');
                         $state.go('app.home');
 
@@ -230,6 +268,15 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             })
 
 
+            .state('app.add_devices', {
+                url: "/add_devices",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/add_devices.html"
+                    }
+                }
+
+            })
 
             .state('app.map', {
                 url: "/map",

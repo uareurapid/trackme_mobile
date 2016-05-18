@@ -1,0 +1,24 @@
+<ion-view view-title="Add Devices">
+    <ion-content class="padding" ng-controller="DevicesController" ng-init="prefillData()">
+        <!-- Form to create devices -->
+        <!-- FORM TO CREATE devices -->
+        <div class="device-form s">
+
+            <form role="form">
+
+                <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                <label for="device_id">Device Id:</label>
+                <input id="device_id" name="deviceId" type="text" class="form-control input-sm" placeholder="Identifier" ng-model="formData.deviceId" disabled>
+
+                <label for="device-description">Device description:</label>
+                <input id="device-description" name="deviceDescription" type="text" class="form-control input-sm" placeholder="Description" ng-model="formData.deviceDescription">
+
+                <br/>
+                <!-- createDevice() WILL CREATE NEW devices -->
+                <button type="submit" class="btn btn-primary btn-sm" ng-click="createDevice()">Add device</button>
+            </form>
+
+        </div>
+        <!-- end form create devices -->
+    </ion-content>
+</ion-view>

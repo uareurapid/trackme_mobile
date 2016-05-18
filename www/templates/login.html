@@ -8,8 +8,23 @@
                 <label class="item item-input">
                     <input type="password" placeholder="Password" name="password" ng-model="formLogin.pass">
                 </label>
+
+            </div>
+
+
+            <label for="remember_me">
+                Remember Me?
+            </label>
+            <div class="onoffswitch" id="remember_me">
+
+                <input type="checkbox" ng-model="rememberMe" ng-change="rememberMeChanged()" class="startup-tracking-switch onoffswitch-checkbox" id="rememberme-switch" name="rememberme-switch" checked="checked" />
+                <label class="onoffswitch-label" for="rememberme-switch">
+                    <div class="onoffswitch-inner"></div>
+                    <div class="onoffswitch-switch"></div>
+                </label>
             </div>
             <input type="submit" class="button button-royal button-block" value="Log in"/>
+
         </form>
     </ion-content>
 </ion-view>
