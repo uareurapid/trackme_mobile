@@ -23,7 +23,7 @@ angular.module('trackme.DeviceUtils', [])
 
                 if(this.isIOS) {
                     this.isIOS7orSuperiorVersion = (this.iOSversion() >= 7);
-                    this.isIOS8 = (this.iOSversion() == 8);
+                    this.isIOS8 = (this.iOSversion() === 8);
                     this.isIOS8orSuperiorVersion = (this.iOSversion() >= 8);
                     this.isIOS9orSuperiorVersion = (this.iOSversion() >=9);
                 }
@@ -272,6 +272,6 @@ angular.module('trackme.DeviceUtils', [])
                 }
 
             }
-        }
+        };
     });
 

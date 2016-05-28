@@ -5,7 +5,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
-    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController'])
+    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController','trackme.GeoLocationController'])
 
 
     .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate) {
@@ -24,6 +24,10 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         $scope.toggleAccountItem = function() {
           //TODO code me
+        };
+
+        $scope.startTracking  = function () {
+          console.log("start tracking gps where");
         };
 
         //when i click to expand the map item

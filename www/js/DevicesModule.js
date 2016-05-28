@@ -46,8 +46,6 @@ angular.module('trackme.DevicesController', ['ionic'])
          var userData = JSON.parse( window.localStorage.getItem( 'userData'));
          if(userData) {
              console.log(userData.email);
-             //$scope.formTrackablesData.owner = userData.email;
-
          }
 
          $http({
@@ -58,8 +56,27 @@ angular.module('trackme.DevicesController', ['ionic'])
          })
           .success(function(data) {
                console.log("received devices response: " + data);
+
                  //TODO only after confirmation
-               window.localStorage.setItem("deviceId",$scope.formData.deviceId);
+               //window.localStorage.setItem("deviceId",$scope.formData.deviceId);
+
+                 //get the prefilled data
+                 var deviceData = JSON.parse( window.localStorage.getItem( 'deviceData'));
+
+                 //if form values are different from saved data, update them
+                 if($scope.formData.deviceId!==deviceData.deviceId) {
+                     deviceData.deviceId = $scope.formData.deviceId;
+                 }
+                 if($scope.formData.deviceDescription!==deviceData.deviceDescription) {
+                     deviceData.deviceDescription = $scope.formData.deviceDescription;
+                 }
+
+                 //save the id coming from the api/database
+                 deviceData.id = data._id;
+                 //update the values on local storage
+                 window.localStorage.setItem('deviceData',JSON.stringify(deviceData));
+
+                 console.log("just added device with deviceData: " + JSON.stringify(deviceData));
 
                $scope.formData.deviceId = ""; // clear the form so our user is ready to enter another
                $scope.formData.deviceDescription = "";
@@ -72,7 +89,6 @@ angular.module('trackme.DevicesController', ['ionic'])
               console.log('Error: ' + data);
           });
      };
-
 
     //############ GET ALL USER DEVICES ##################
     $scope.getUserDevices = function( callback ) {
