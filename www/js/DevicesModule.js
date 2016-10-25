@@ -4,7 +4,7 @@
 
 angular.module('trackme.DevicesController', ['ionic'])
 
-    .controller('DevicesController',function ($scope, $state, $http, $ionicPopup) {
+    .controller('DevicesController',function ($scope, $state, $http) {
 
     //clean the form fields
     $scope.formData = {};
@@ -33,6 +33,7 @@ angular.module('trackme.DevicesController', ['ionic'])
                 console.log('Error: ' + data);
             });
     };
+
 
     //############ CREATE A NEW DEVICE ####################
     // this is actually the submit of the form
@@ -133,85 +134,11 @@ angular.module('trackme.DevicesController', ['ionic'])
              $scope.formData.deviceId = deviceData.deviceId;
              $scope.formData.deviceDescription = deviceData.deviceDescription;
          }
+         else if(window.device){
+             $scope.formData.deviceId = window.device.uuid;
+         }
 
      };
-
-     // A confirm dialog
-     $scope.showConfirm = function(confirm, deny) {
-            var confirmPopup = $ionicPopup.confirm({
-                title: 'Add new device',
-                template: 'Add this device as new tracking device?'
-            });
-
-            confirmPopup.then(function(res) {
-                if(res) {
-                    console.log('You are sure');
-                    if(confirm && typeof confirm === 'function') {
-                        confirm();
-                    }
-                } else {
-                    console.log('You are not sure');
-                    if(deny && typeof deny === 'function') {
-                        deny();
-                    }
-                }
-            });
-    };
-
-    $scope.checkUserDevices = function() {
-
-        console.log("TODO get user device info here: ");
-        var deviceIdentifier = "My Device Id";//dummy id, just in case
-        var deviceDescription = "My Device Description";
-
-        //The cordova-plugin-device plugin defines a global device object,
-        if(device) {
-            deviceIdentifier = device.uuid;
-            deviceDescription = device.name;
-        }
-
-        console.log("device id/name: " + deviceIdentifier);
-
-        $scope.getUserDevices( function(data) {
-            var exists = false;
-            //callback function for success
-            console.log("callback called with data: " + JSON.stringify(data));
-            for (var i = 0; i < data.length; i++) {
-                if(data[i].deviceId==deviceIdentifier) {
-                    exists = true;
-                    console.log("this device already exists: name " + data[i].deviceId);
-                    break;
-                }
-            }
-            if(!exists) {
-
-                $scope.showConfirm( function() {
-                     //user confirmed
-                     var deviceData = {
-                            deviceId: deviceIdentifier,
-                            deviceDescription: deviceDescription
-                     };
-                     //save data for prefill();
-                     window.localStorage.setItem( 'deviceData',JSON.stringify(deviceData));
-                     //navigate
-                     $state.go('app.add_devices');
-                },
-                function () {
-                    //user denied, do nothing
-                });
-
-            }
-            /**
-             * example response
-             * [{"_id":"5637ecb213b2ca529970a539","deviceId":"iPad de PC","deviceDescription":"iPad de PC","deviceOwner":"cristo.paulo@gmail.com","__v":0},
-             * {"_id":"563e2591922733760b37bbcd","deviceId":"dev3","deviceDescription":"dev3desc","deviceOwner":"cristo.paulo@gmail.com","__v":0},
-             * {"_id":"564143e35b2683d0a543dca4","deviceId":"Paulo Cristo’s iPhone","deviceDescription":"added again","deviceOwner":"cristo.paulo@gmail.com","__v":0},
-             * {"_id":"56424175bc107b247618c986","deviceId":"newidentifier","deviceDescription":"newdescription","deviceOwner":"cristo.paulo@gmail.com","__v":0}]
-             */
-
-
-        });
-    };
     //call it immediatelly
     // TODO this should be cached and loaded on demand, and not called all the time when the page loads
     //$scope.getUserDevices();

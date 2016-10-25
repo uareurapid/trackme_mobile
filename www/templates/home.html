@@ -1,6 +1,39 @@
-<ion-view view-title="Home">
-        <ion-content class="padding" ng-controller="DevicesController" ng-init="checkUserDevices()">
-            my home page here
-            <a href="#" ng-controller="GeoLocationController" ng-click="startTracking()">Start Tracking</a>
-        </ion-content>
+<ion-view view-title="Home" ng-controller="MainController">
+    <ion-content scroll="false">
+        <!--       <div class="left">
+                   <button class="button button-positive button-clear no-animation icon ion-chevron-left"
+                           ng-click="" ng-if="!slideIndex">
+                   </button>
+                   <button class="button button-positive button-clear no-animation icon ion-chevron-left"
+                           ng-click="previous()" ng-if="slideIndex > 0">
+
+                   </button>
+               </div>
+       -->
+
+        <!-- <div class="right">
+             <button class="button button-positive button-clear no-animation icon ion-chevron-right"
+                     ng-click="next()" ng-if="!slideIndex">
+
+             </button>
+             <button class="button button-positive button-clear no-animation icon ion-chevron-right"
+                     ng-click="next()" ng-if="slideIndex>0">
+
+             </button>
+        </div>-->
+        <ion-slide-box does-continue="false"
+                       show-pager='true'
+                       slide-interval="3000"
+                       auto-play="false"
+                       on-slide-changed="slideChanged(index)">
+            <ion-slide ng-repeat="slide in slides">
+                <h3>{{slide.name}}</h3>
+
+
+
+            </ion-slide>
+
+
+        </ion-slide-box>
+    </ion-content>
 </ion-view>

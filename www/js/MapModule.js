@@ -4,7 +4,7 @@
 
 angular.module('trackme.MapController', ['ionic'])
 
-.controller('MapController',function ($scope, $http) {
+.controller('MapController',function ($scope, $http, $ionicPopover) {
 
         var serverLocation = window.localStorage.getItem('serverLocation');
 
@@ -448,6 +448,20 @@ angular.module('trackme.MapController', ['ionic'])
                 });
 
         };
+
+        //the filtering options are on a popup
+        /*
+        $ionicPopover.fromTemplateUrl('templates/filtering.html', {
+            scope: $scope,
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
+
+        // Triggered on a button click, or some other target
+        $scope.openPopover = function($event) {
+            console.log("sow popover");
+            $scope.popover.show($event);
+        };*/
 
 
 

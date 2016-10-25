@@ -3,9 +3,97 @@
  */
 angular.module('trackme.SettingsController', [])
 
-    .controller('SettingsController',function ($scope, $http) {
+    .controller('SettingsController',function ($scope, $http, $ionicModal) {
 
         $scope.batchSize = 2;
+
+        //model for the checkboxes
+        $scope.batchesSending = true;
+        $scope.startupTracking = true;
+
+        $scope.data =  {
+            startupChoice : 'cdt'
+        };
+
+        //DO THIS ON INIT
+        var testData = window.localStorage.getItem('startupTracking');
+        var enabledOnStartup = true;
+        if(!testData) {
+            var startupTracking = {
+                startupTrackingEnabled : enabledOnStartup,
+                startupTrackable:null
+            };
+            console.log("setting item on storage");
+            window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
+        }
+
+        //is enabled?
+        $scope.isStartupTrackingEnabled = function() {
+            console.log("isStartupTrackingEnabled()");
+            var testData = window.localStorage.getItem('startupTracking');
+            if(testData) {
+                var startupTracking = JSON.parse(testData);
+                enabledOnStartup = startupTracking.startupTrackingEnabled;
+                console.log("isStartupTrackingEnabled() return " + enabledOnStartup);
+                return enabledOnStartup;
+            }
+            console.log("isStartupTrackingEnabled() return true");
+            return true;
+        };
+
+        //save changes
+        $scope.startupTrackingChanged = function() {
+            console.log("startupTrackingChanged()");
+            enabledOnStartup = !enabledOnStartup;
+            var testData = window.localStorage.getItem('startupTracking');
+            if(testData) {
+                var startupTracking = JSON.parse(testData);
+                startupTracking.startupTrackingEnabled = enabledOnStartup;
+                window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
+                console.log("after startupTrackingChanged()");
+            }
+        };
+
+        $scope.startupChoicesList = [
+            { text: "Choose a default trackable", value: "cdt" },
+            { text: "I will choose later", value: "wcl" }
+        ];
+
+        //*******************************************************
+        $ionicModal.fromTemplateUrl('./templates/modal_trackables.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+        $scope.openModal = function() {
+            $scope.modal.show();
+        };
+        $scope.closeModal = function() {
+            $scope.modal.hide();
+        };
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.modal.remove();
+        });
+        // Execute action on hide modal
+        $scope.$on('modal.hidden', function() {
+            // Execute action
+        });
+        // Execute action on remove modal
+        $scope.$on('modal.removed', function() {
+            // Execute action
+        });
+
+        //******************************************************
+
+        $scope.startupChoiceChanged = function(item) {
+            console.log("item chosed is: " + item.value + $scope.data.startupChoice);
+            if(item.value==='cdt') {
+                $scope.openModal();
+            }
+        };
+
 
         //range input change, for revert language direction
         $scope.batchesSwitchChanged = function() {

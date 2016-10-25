@@ -57,92 +57,19 @@
                 </ion-item>
                 <ion-item menu-close href="#/app/add_devices">
                     Add new Device
-                </ion-item><!--href="#/app/map"-->
-                <ion-item menu-close ng-click="toggleMapItem()"
-                    ng-class="{active: isMapItemExpanded()}">
-                    <i class="icon" ng-class="isMapItemExpanded() ? 'ion-minus' : 'ion-plus'"></i>
-                    &nbsp;My Map
                 </ion-item>
-                <ion-item class="item-accordion" ng-show="isMapItemExpanded()" ng-controller="MapController">
-                    <!-- trackables list -->
-                    <div class="panel panel-default" ng-controller="TrackablesController">
-                        <div class="panel-heading">
-                            <h4 class="panel-title" id="my_trackables">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">My Trackables ({{ trackables.length }})</a>
-                            </h4>
-                        </div>
-                        <div id="collapse1" class="panel-collapse collapse in">
-                            <div class="panel-body">
-
-
-                                <div id="trackables-list" class="row">
-
-                                    <form role="form">
-
-                                        <label for="filter_by_trackable">Filter by trackable:</label>
-                                        <select id="filter_by_trackable" ng-model="selectedTrackable" ng-change="trackableChanged(selectedTrackable)" ng-options="trackable._id as trackable.name for trackable in trackables">
-                                            <option value="">Show all</option>
-                                        </select>
-
-                                    </form>
-
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end trackables list -->
-
-                    <!-- filter by device here -->
-
-                    <div class="panel panel-default" ng-controller="DevicesController">
-                        <div class="panel-heading">
-                            <h4 class="panel-title" id="my_devices">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">My Devices ({{ devices.length }})</a>
-                            </h4>
-                        </div>
-                        <div id="collapse3" class="panel-collapse collapse">
-                            <div class="panel-body">
-
-                                <!-- devices list -->
-
-                                <!-- DEVICES LIST -->
-                                <div id="devices-list" class="row">
-                                    <!-- <div class="col-sm-4 col-sm-offset-4">-->
-                                    <form role="form">
-
-                                        <label for="filter_by_device">Filter by device:</label>
-                                        <select id="filter_by_device" ng-model="selectedDevice" ng-change="deviceChanged(selectedDevice)" ng-options="device._id as device.deviceId for device in devices">
-                                            <option value="">Show all</option>
-                                        </select>
-
-                                    </form>
-                                    <!--</div>-->
-                                </div>
-                                <!-- end devices list -->
-
-
-                            </div>
-                        </div>
-                    </div>
+                <ion-item menu-close href="#/app/map">
+                    My Map
                 </ion-item>
-
-                <ion-item menu-close ng-click="toggleAccountItem()">
+                <ion-item menu-close href="#app/filtering">
+                    Filter options
+                </ion-item>
+                <ion-item menu-close href="#app/profile">
                     My Account
-                    <div>
-                    {{loggedin_user}}
-                    </div>
                 </ion-item>
-                <!-- TODO accordion with username<ion-item menu-close ng-click="toggleMapItem()"
-                          ng-class="{active: isMapItemExpanded()}">
-                    <i class="icon" ng-class="isMapItemExpanded() ? 'ion-minus' : 'ion-plus'"></i>
-                    &nbsp;My Map
-                </ion-item>-->
                 <ion-item menu-close href="#/app/settings">
                     Settings
                 </ion-item>
-
             </ion-list>
         </ion-content>
     </ion-side-menu>

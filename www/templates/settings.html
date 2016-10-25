@@ -31,7 +31,7 @@
                     <td>Send records in batches? </td>
                     <td>
                         <div class="onoffswitch">
-                            <input type="checkbox" ng-change="batchesSwitchChanged()" ng-model="batchSize" class="batches-switch onoffswitch-checkbox" id="batches-switch" name="game-services-switch" checked="checked" />
+                            <input type="checkbox" ng-change="batchesSwitchChanged()" ng-true-value="'ON'" ng-false-value="'OFF'" ng-model="batchesSending" class="batches-switch onoffswitch-checkbox" id="batches-switch" name="game-services-switch" checked="checked" />
                             <label class="onoffswitch-label" for="batches-switch">
                                 <div class="onoffswitch-inner"></div>
                                 <div class="onoffswitch-switch"></div>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div id="invisible_batch_sizes" class="is-hidden">
-                            <input class="batches-switch-input" name="batches-switch-input" id="batches-switch-input" type=range min=2 max=20 value=2 step=1/>
+                            <input class="batches-switch-input" ng-model="batchSize" name="batches-switch-input" id="batches-switch-input" type=range min=2 max=20 value=2 step=1/>
                             <output class="batches-switch-output" for="batches-switch-input">2</output>
                         </div>
                     </td>
@@ -49,12 +49,21 @@
                     <td>Start tracking on startup? </td>
                     <td>
                         <div class="onoffswitch">
-                            <input type="checkbox" class="startup-tracking-switch onoffswitch-checkbox" id="startup-tracking-switch" name="game-services-switch" checked="checked" />
+                            <input type="checkbox" ng-change="startupTrackingChanged()" ng-model="startupTracking" ng-true-value="'ON'" ng-false-value="'OFF'" class="startup-tracking-switch onoffswitch-checkbox" id="startup-tracking-switch" name="game-services-switch" checked="checked" />
                             <label class="onoffswitch-label" for="startup-tracking-switch">
                                 <div class="onoffswitch-inner"></div>
                                 <div class="onoffswitch-switch"></div>
                             </label>
                         </div>
+                        <p></p>
+                        <div class="tracking_choice" ng-show="isStartupTrackingEnabled()">
+                            <ion-radio ng-repeat="item in startupChoicesList"
+                                       ng-value="item.value"
+                                       ng-model="data.startupChoice"
+                                       ng-change="startupChoiceChanged(item)">
+                                {{ item.text }}
+                        </div>
+
                     </td>
                 </tr>
 

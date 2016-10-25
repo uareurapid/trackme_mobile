@@ -1,6 +1,6 @@
 <ion-view view-title="Sign up">
-    <ion-content class="padding">
-        <form ng-submit="signup()">
+    <ion-content class="padding" ng-controller="MainController">
+        <form ng-submit="performSignup()">
             <div class="list">
                 <label class="item item-input">
                     <input type="email" placeholder="Email">

@@ -5,10 +5,10 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
-    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController','trackme.GeoLocationController'])
+    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController','trackme.GeoLocationController','GeoLocationService'])
 
 
-    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate) {
+    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation) {
 
 
         //if(!window.localStorage.getItem('serverLocation')) {
@@ -19,30 +19,14 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         $scope.loggedin_user = "";
 
-        //start closed
-        $scope.isMapItemOpened = false;
-
-        $scope.toggleAccountItem = function() {
-          //TODO code me
-        };
+        //for the slider tutorial
+        $scope.data = {};
 
         $scope.startTracking  = function () {
           console.log("start tracking gps where");
         };
 
-        //when i click to expand the map item
-        $scope.toggleMapItem = function() {
-            console.log("map toogled " + $state.is('app.map'));
-            $scope.isMapItemOpened = !$scope.isMapItemOpened;
-            if($scope.isMapItemOpened) {
-                $state.go('app.map');
-            }
-        };
-
-        $scope.isMapItemExpanded = function() {
-            return $scope.isMapItemOpened;
-        };
-
+        //toggle menu left
         $scope.toggleLeft = function() {
             $ionicSideMenuDelegate.toggleLeft();
         };
@@ -128,9 +112,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     }
 
                     window.localStorage.setItem( 'userData',JSON.stringify(userData));
-                        console.log("navigate to home/map page");
+                        console.log("navigate to home/map page, and broadcastmessage...");
                         //$state.go('devices');
                         $state.go('app.home');
+
+                        GeoLocation.getCoordinates();
+                        $scope.checkUserDevices();
+
 
                         //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
 
@@ -140,6 +128,138 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     //http://stackoverflow.com/questions/24710503/how-do-i-post-urlencoded-form-data-with-http-in-angularjs
 
                 });
+        };
+
+        //############ GET ALL USER DEVICES ##################
+        // TODO THIS IS DUPLICATED SHOULD BE A SERVICE??
+        $scope.getUserDevices = function( callback ) {
+
+            var userData = JSON.parse( window.localStorage.getItem( 'userData'));
+            if(userData) {
+                console.log("devicesmodule: getting all available devices for username: " + userData.email);
+
+                var serverLocation = window.localStorage.getItem('serverLocation');
+                var apiPath = serverLocation +'/api/devices?owner=' + userData.email;
+
+                $http({
+                    method  : 'GET',
+                    url     : apiPath,
+                    headers : { 'Authorization': 'Bearer ' + userData.token }  // set the headers so angular passing info as form data (not request payload)
+                })
+                    //$http.get(apiPath)
+                    .success(function(data) {
+                        $scope.devices = data;
+                        console.log(data);
+                        //send the data to the callback function
+                        if(callback && typeof callback === 'function') {
+                            callback(data);
+                        }
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+            }
+            else {
+                console.log("no user data");
+            }
+
+
+        };
+
+        // A confirm dialog
+        $scope.showConfirm = function(confirm, deny) {
+
+            /*$scope.deviceData = {};
+
+            var confirmPopup = $ionicPopup.show({
+                template: '<input type="text" name="dev_description" ng-model="deviceData.description">',
+                title: 'Add new device?',
+                subTitle: 'Add this device as new tracking device?',
+                scope: $scope,
+                buttons: [
+                    { text: 'Cancel' },
+                    {
+                        text: '<b>Save</b>',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            if (!$scope.deviceData.description) {
+                                //don't allow the user to close unless he enters device description
+                                e.preventDefault();
+                            } else {
+                                return $scope.deviceData.description;
+                            }
+                        }
+                    }
+                ]
+            });*/
+
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Add new device',
+                template: 'Add this device as new tracking device?'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    console.log('You are sure');
+                    if(confirm && typeof confirm === 'function') {
+                        confirm();
+                    }
+                } else {
+                    console.log('You are not sure');
+                    if(deny && typeof deny === 'function') {
+                        deny();
+                    }
+                }
+            });
+        };
+
+        $scope.checkUserDevices = function() {
+
+            var deviceIdentifier = "My Device Id";//dummy id, just in case
+            var deviceDescription = "My Device Description";
+
+            //The cordova-plugin-device plugin defines a global device object,
+            if(window.device) {
+                deviceIdentifier = device.uuid;
+                deviceDescription = device.name;
+            }
+
+            console.log("device id/name: " + deviceIdentifier);
+
+            $scope.getUserDevices( function(data) {
+                var exists = false;
+                //callback function for success
+                console.log("callback called with data: " + JSON.stringify(data));
+                for (var i = 0; i < data.length; i++) {
+                    if(data[i].deviceId==deviceIdentifier) {
+                        exists = true;
+                        console.log("this device already exists: name " + data[i].deviceId);
+                        break;
+                    }
+                }
+                if(!exists) {
+
+
+                    //----------
+
+                    $scope.showConfirm( function() {
+                            //user confirmed
+                            var deviceData = {
+                                deviceId: deviceIdentifier,
+                                deviceDescription: deviceDescription
+                            };
+                            //save data for prefill();
+                            window.localStorage.setItem( 'deviceData',JSON.stringify(deviceData));
+                            //navigate
+                            $state.go('app.add_devices');
+                        },
+                        function () {
+                            //user denied, do nothing
+                        });
+
+                }
+
+            });
         };
 
         // process the form
@@ -194,11 +314,39 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 });
         };
 
+        $scope.next = function() {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previous = function() {
+            $ionicSlideBoxDelegate.previous();
+        };
+
+
+        $scope.slides = [{name:"1"},{name:"2"},{name:"3"},{name:"4"}];
+
+        // Called each time the slide changes
+        $scope.slideChanged = function(index) {
+            $scope.slideIndex = index;
+        };
+
+
+        /*$scope.$on("$ionicSlides.sliderInitialized", function(event, data){
+            // data.slider is the instance of Swiper
+            $scope.slider = data.slider;
+        });
+
+        $scope.$on("$ionicSlides.slideChangeStart", function(event, data){
+            console.log('Slide change is beginning');
+        });
+
+        $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
+            // note: the indexes are 0-based
+            $scope.activeIndex = data.activeIndex;
+            $scope.previousIndex = data.previousIndex;
+        });*/
+
     })
 
-    .controller("HomeController", function($scope) {
-
-    })
 
     //ANGULAR ROUTES
  .config(function($stateProvider, $urlRouterProvider) {
@@ -282,6 +430,26 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
             })
 
+            .state('app.filtering', {
+                url: "/filtering",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/filtering.html"
+                    }
+                }
+
+            })
+
+            .state('app.profile', {
+                url: "/profile",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/profile.html"
+                    }
+                }
+
+            })
+
             .state('app.map', {
                 url: "/map",
                 views: {
@@ -301,32 +469,6 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     }
                 }
             });
-
-
-
-            /*.state('app.home', {
-                url: "/home",
-                views: {
-                    'appContent' :{
-                        templateUrl: "home.html",
-                        controller : "HomeController"
-                    }
-                }
-            });*/
-
-        /*
-
-         //this state has no parent, so it uses 'index.html' as its template. The index page has no
-         //sidemenu in it
-         .state('page2', {
-         url: "/page2",
-         templateUrl: "templates/page2.html"
-         }
-         })
-         */
-
-
-
 
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/front');

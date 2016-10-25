@@ -1,5 +1,11 @@
-<ion-view view-title="Map" <!-- ng-controller="MapController" ng-init="loadMap()"-->>
-        <ion-content class="padding">
+<ion-view view-title="Map">
+        <ion-content class="padding" ng-controller="MapController" ng-init="loadMap()">
+            <!--<div class="bar bar-header">
+                <div class="buttons">
+                    <button class="button button-icon ion-more" ng-click="popover.openPopover($event)">
+                    </button>
+                </div>
+            </div>-->
             <div id="map_canvas"></div>
         </ion-content>
 </ion-view>

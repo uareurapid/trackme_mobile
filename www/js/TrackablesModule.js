@@ -14,6 +14,9 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
 
     var serverLocation = window.localStorage.getItem('serverLocation');
 
+    $scope.trackables = [];
+
+    var isLoadingTrackables = false;
     //store the main object on the scope
     $scope.formTrackablesData = {};
 
@@ -56,6 +59,8 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
         var userData = JSON.parse( window.localStorage.getItem( 'userData'));
         if(userData) {
 
+            isLoadingTrackables = true;
+
             console.log("getting all available trackables for username: " + userData.email);
 
 
@@ -68,19 +73,14 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
             //$http.get(apiPath)
                 .success(function(data) {
 
-                    //reset all input fields, so we can add a new one again
-                    //$scope.formTrackablesData.privacy = "Private";
-                    //$scope.formTrackablesData.name = "";
-                    //$scope.formTrackablesData.description = "";
-                    //$scope.formTrackablesData.type = $scope.formTrackablesData.typeOptions[0];
-                    //do not clear $scope.formTrackablesData.owner
-
                     //add new received data to the $scope var
                     $scope.trackables = data;
                     console.log("received: " +data);
+                    isLoadingTrackables = false;
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);
+                    isLoadingTrackables = false;
                 });
         }
 
@@ -89,7 +89,10 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
 
     // when landing on the page, get the username, all his trackables, and then we show them!
     // TODO this should be cached and loaded on demand, and not called all the time when the page loads
-    //$scope.getAllTrackables();
+
+    if($scope.trackables.length===0 && !isLoadingTrackables) {
+        $scope.getAllTrackables();
+    }
 
     //############## CREATE NEW TRACKABLE ######################
     //this is actually the submit of the form
@@ -134,6 +137,17 @@ angular.module('trackme.TrackablesController',['trackme.MapController'])
                 console.log('Error: ' + data);
             });
 
+    };
+
+    //select a startup trackable
+    $scope.selectStartupTrackable = function(trackable) {
+        console.log("selected startup trackable: " + trackable);
+        var testData = window.localStorage.getItem('startupTracking');
+        if(testData) {
+            var startupTracking = JSON.parse(testData);
+            startupTracking.startupTrackable = trackable;
+            window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
+        }
     };
 
     // delete a trackable after checking it
