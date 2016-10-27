@@ -4,7 +4,7 @@
 
 //trackables controller
 
-angular.module('trackme.TrackablesController',['trackme.MapController'])
+angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material'])
 
 .controller('TrackablesController',function ($scope, /*$cookies,*/ $http) {
 

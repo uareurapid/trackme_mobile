@@ -5,9 +5,13 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
-    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController','trackme.GeoLocationController','GeoLocationService'])
+    'trackme.TrackablesController','trackme.MapController','trackme.SettingsController',
+    'trackme.GeoLocationController','GeoLocationService','ionic-material'])
 
 
+    //TODO check ionic material stuff
+    //https://github.com/zachfitz/Ionic-Material
+    //DEMO http://ionicmaterial.com/demo/
     .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation) {
 
 
@@ -15,16 +19,15 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//trackme.no-ip.net
         //}
 
-        $scope.rememberMe = true;
+        $scope.rememberMe = { checked: true };
+        $scope.keepMeLoggedin = { checked: true };
+
+        $scope.data2 = { 'volume' : '50' };
 
         $scope.loggedin_user = "";
 
         //for the slider tutorial
         $scope.data = {};
-
-        $scope.startTracking  = function () {
-          console.log("start tracking gps where");
-        };
 
         //toggle menu left
         $scope.toggleLeft = function() {
@@ -51,7 +54,10 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //remember me option changed
         $scope.rememberMeChanged =  function() {
-            $scope.rememberMe = !$scope.rememberMe;
+
+        };
+
+        $scope.keepMeLoggedinChanged =  function() {
 
         };
 
@@ -93,7 +99,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                             expires: data.expires,
                             token: data.token
                         };
-                    if($scope.rememberMe) {
+                    if($scope.rememberMe.checked) {
                         var userCredentials = {
                             username: $scope.formLogin.user,
                             password: $scope.formLogin.pass
@@ -116,7 +122,11 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                         //$state.go('devices');
                         $state.go('app.home');
 
-                        GeoLocation.getCoordinates();
+
+
+
+                        //GeoLocation.startTrackingLocation();
+
                         $scope.checkUserDevices();
 
 

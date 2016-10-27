@@ -181,3 +181,12 @@
 .right{
     right: 0;
 }
+
+/* range slider */
+#green input::-webkit-slider-thumb:before {
+    background: #00ff00 !important;
+}
+
+#green i {
+    color: #00ff00;
+}

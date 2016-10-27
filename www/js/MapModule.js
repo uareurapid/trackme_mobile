@@ -2,7 +2,7 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.MapController', ['ionic'])
+angular.module('trackme.MapController', ['ionic','ionic-material'])
 
 .controller('MapController',function ($scope, $http, $ionicPopover) {
 

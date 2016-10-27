@@ -1,18 +1,24 @@
 /**
  * Created by paulocristo on 13/05/16.
  */
-angular.module('trackme.SettingsController', [])
+angular.module('trackme.SettingsController', ['ionic','ionic-material'])
 
     .controller('SettingsController',function ($scope, $http, $ionicModal) {
+
+        $scope.wifiOnly = { checked: true };
 
         $scope.batchSize = 2;
 
         //model for the checkboxes
-        $scope.batchesSending = true;
-        $scope.startupTracking = true;
+        $scope.batchesSending = { checked: true} ;
+        $scope.startupTracking = {checked: true} ;
 
         $scope.data =  {
             startupChoice : 'cdt'
+        };
+
+        $scope.wifiOnlyChanged =  function() {
+            console.log("use wifi only" + $scope.wifiOnly.checked);
         };
 
         //DO THIS ON INIT

@@ -4,9 +4,10 @@
 
 var GeoLocationService = angular.module('GeoLocationService', [])
 
-//TODO SHOULD BE A SERVICE NO??? NOT A CONTROLLER
-    .service('GeoLocation', function() {
+    //TODO SHOULD BE A SERVICE, NOT A CONTROLLER
+    .service('GeoLocation', function($interval) {
 
+        var stopGeolocation;
 
         this.getCoordinates = function () {
 
@@ -33,9 +34,27 @@ var GeoLocationService = angular.module('GeoLocationService', [])
                     'message: ' + error.message + '\n');
             }
             //see https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/
-            navigator.geolocation.getCurrentPosition(onSuccess, onError,{enableHighAccuracy: true});
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(onSuccess, onError,{enableHighAccuracy: true});
+            }
+            else {
+                alert("no geolocation system!");
+            }
+
         };
 
 
+        this.startTrackingLocation = function(delay) {
+            //returns a promise that we can cancel
+            stopGeolocation = $interval(this.getCoordinates,1000);
+            //invoke the get location every 10 seconds
+        };
+
+        this.stopTrackingLocation = function() {
+            if(stopGeolocation) {
+                $interval.cancel(stopGeolocation);
+                stopGeolocation = undefined;
+            }
+        };
 
 });

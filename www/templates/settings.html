@@ -2,7 +2,56 @@
         <ion-content class="padding" ng-controller="SettingsController">
 
 
-            <table>
+            <div class="item item-divider">
+                WiFi Only?
+            </div>
+
+            <ion-toggle ng-model="wifiOnly.checked"
+                        ng-change="wifiOnlyChanged()">
+                WiFi Only?
+            </ion-toggle>
+
+            <div class="item item-divider">
+                Tracking Interval (in minutes)
+            </div>
+
+            <div class="onoffswitch">
+                <input class="reverse_language_range" name="language_range_id" id="language_range_id" type=range min=1 max=60 value=5 step=1/>
+                <output class="change_direction_range_output" for="language_range_id">10</output>
+            </div>
+
+
+            <div class="item item-divider">
+                Send records in batches?
+            </div>
+
+            <ion-toggle ng-model="batchesSending.checked"
+                        ng-change="batchesSwitchChanged()">
+                Send records in batches?
+            </ion-toggle>
+
+            <div id="invisible_batch_sizes" class="is-hidden">
+                <input class="batches-switch-input" ng-model="batchSize" name="batches-switch-input" id="batches-switch-input" type=range min=2 max=20 value=2 step=1/>
+                <output class="batches-switch-output" for="batches-switch-input">2</output>
+            </div>
+
+            <div class="item item-divider">
+                Start tracking on startup?
+            </div>
+
+            <ion-toggle ng-model="startupTracking.checked"
+                        ng-change="startupTrackingChanged()">
+                Start tracking on startup?
+            </ion-toggle>
+            <div class="tracking_choice" ng-show="isStartupTrackingEnabled()">
+                <ion-radio ng-repeat="item in startupChoicesList"
+                           ng-value="item.value"
+                           ng-model="data.startupChoice"
+                           ng-change="startupChoiceChanged(item)">
+                    {{ item.text }}
+            </div>
+
+            <!--<table>
                 <tr>
                 <td>WiFi Only? </td>
                 <td>
@@ -14,9 +63,9 @@
                         </label>
                     </div>
                 </td>
-                </tr>
+                </tr>-->
 
-                <tr>
+               <!-- <tr>
                     <td>Tracking Interval (in minutes) </td>
                     <td>
                         <div class="onoffswitch">
@@ -25,9 +74,9 @@
                             <output class="change_direction_range_output" for="language_range_id">10</output>
                         </div>
                     </td>
-                </tr>
+                </tr>-->
 
-                <tr>
+                <!--<tr>
                     <td>Send records in batches? </td>
                     <td>
                         <div class="onoffswitch">
@@ -43,9 +92,9 @@
                             <output class="batches-switch-output" for="batches-switch-input">2</output>
                         </div>
                     </td>
-                </tr>
+                </tr>-->
 
-                <tr>
+                <!--<tr>
                     <td>Start tracking on startup? </td>
                     <td>
                         <div class="onoffswitch">
@@ -67,7 +116,7 @@
                     </td>
                 </tr>
 
-            </table>
+            </table>-->
 
         </ion-content>
 </ion-view>

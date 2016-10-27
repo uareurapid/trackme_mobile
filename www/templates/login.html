@@ -1,6 +1,7 @@
 <ion-view view-title="Log in">
     <ion-content class="padding" ng-controller="MainController">
 
+        <div style="width: 60%">
         <form ng-model="formLogin" ng-submit="performLogin()">
             <div class="list">
                 <label class="item item-input">
@@ -13,19 +14,33 @@
             </div>
 
 
-            <label for="remember_me">
-                Remember Me?
-            </label>
-            <div class="onoffswitch" id="remember_me">
 
-                <input type="checkbox" ng-model="rememberMe" ng-change="rememberMeChanged()" class="startup-tracking-switch onoffswitch-checkbox" id="rememberme-switch" name="rememberme-switch" checked="checked" />
-                <label class="onoffswitch-label" for="rememberme-switch">
-                    <div class="onoffswitch-inner"></div>
-                    <div class="onoffswitch-switch"></div>
-                </label>
+            <div class="item item-divider">
+                Options
             </div>
+
+            <ion-toggle ng-model="rememberMe.checked"
+                        ng-change="rememberMeChanged()">
+                Remember me
+            </ion-toggle>
+            <ion-toggle ng-model="keepMeLoggedin.checked"
+                 ng-change="keepMeLoggedinChanged()">
+                Keep me Logged In for:
+            </ion-toggle>
+
+                <div class="range" id="green">
+                    <i class="icon ion-ios7-lightbulb-outline"></i>
+                    <input type="range" name="volume" ng-model="data2.volume">
+                    <i class="icon ion-ios7-lightbulb"></i>
+                </div>
+                <p>{{data2.volume}} day(s)</p>
+
+
+
+
             <input type="submit" class="button button-royal button-block" value="Log in"/>
 
         </form>
+        </div>
     </ion-content>
 </ion-view>

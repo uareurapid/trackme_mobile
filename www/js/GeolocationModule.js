@@ -2,7 +2,7 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.GeoLocationController', ['ionic'])
+angular.module('trackme.GeoLocationController', ['ionic','ionic-material'])
 
     .controller('GeoLocationController',function ($scope, $http) {
 

@@ -2,7 +2,7 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.DevicesController', ['ionic'])
+angular.module('trackme.DevicesController', ['ionic','ionic-material'])
 
     .controller('DevicesController',function ($scope, $state, $http) {
 
