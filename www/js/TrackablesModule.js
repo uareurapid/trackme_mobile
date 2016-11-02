@@ -6,11 +6,54 @@
 
 angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material'])
 
-.controller('TrackablesController',function ($scope, /*$cookies,*/ $http) {
+.controller('TrackablesController',function ($scope, /*$cookies,*/ $http, $ionicPopover) {
 
     $scope.testme = function() {
         $scope.$emit("testme", {});
     };
+
+        $scope.$on('$ionicView.enter', function(){
+            alert('Map View Entered');
+        });
+
+        $scope.$on('$ionicView.loaded', function(){
+            alert('Map View Exited');
+        });
+
+        $scope.selectedTrackable = {
+            privacy: "",
+            name: "",
+            description: "",
+            type: ""
+        };
+        //FOR POPOVER
+        // .fromTemplateUrl() method
+        $ionicPopover.fromTemplateUrl('trackable_detail.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
+
+
+        $scope.openPopover = function($event,trackable) {
+            $scope.selectedTrackable = trackable;
+            $scope.popover.show($event);
+        };
+        $scope.closePopover = function() {
+            $scope.popover.hide();
+        };
+        //Cleanup the popover when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.popover.remove();
+        });
+        // Execute action on hidden popover
+        $scope.$on('popover.hidden', function() {
+            // Execute action
+        });
+        // Execute action on remove popover
+        $scope.$on('popover.removed', function() {
+            // Execute action
+        });
 
     var serverLocation = window.localStorage.getItem('serverLocation');
 

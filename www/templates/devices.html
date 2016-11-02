@@ -1,8 +1,14 @@
 <ion-view view-title="My Devices">
     <ion-content class="padding" ng-controller="DevicesController" ng-init="getUserDevices()">
         <form ng-model="formDevices">
-            <div class="list">
-                <table>
+            <!--<div class="list">-->
+
+                <ul class="list">
+                    <li class="item" ng-repeat="device in devices">
+                        {{device.description}}
+                    </li>
+                </ul>
+                <!--<table>
                     <tr>
                         <th>Device Id</th>
                         <th>Device Description</th>
@@ -13,10 +19,10 @@
                         <td>{{device.description}}</td>
                         <td>{{device.owner}}</td>
                     </tr>
-                </table>
+                </table>-->
 
 
-            </div>
+            <!--</div>-->
             <!--<input type="submit" class="button button-royal button-block" value="Log in"/>-->
         </form>
     </ion-content>

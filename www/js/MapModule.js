@@ -4,9 +4,32 @@
 
 angular.module('trackme.MapController', ['ionic','ionic-material'])
 
-.controller('MapController',function ($scope, $http, $ionicPopover) {
+.controller('MapController',function ($scope, $http, $ionicPopover,$ionicPlatform,$ionicSideMenuDelegate) {
 
         var serverLocation = window.localStorage.getItem('serverLocation');
+
+        //http://ionicframework.com/docs/api/directive/ionSideMenus/
+        $scope.$watch(function () {
+                return $ionicSideMenuDelegate.isOpenLeft();
+            },
+            function (isOpen) {
+                if (isOpen){
+                    document.getElementById('main_menu_view').style.display = 'initial';
+                }else {
+                    document.getElementById('main_menu_view').style.display = 'none';
+                }
+
+            });
+
+        //in order to events fire the controller must be attached to the ion-view on the template
+        /*$scope.$on('$ionicView.enter', function(){
+            // Entering in map page, assuring the content will show up
+            document.getElementById('main_menu_view').style.display = 'none';
+        });
+
+        $scope.$on('$ionicView.leave', function(){
+            document.getElementById('main_menu_view').style.display = 'initial';
+        });*/
 
         //will hold the devices
         //$scope.allDevices = [];
@@ -115,7 +138,8 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
         };
 
 
-        $scope.loadMap = function() {
+        $ionicPlatform.ready(function() {
+        //$scope.loadMap = function() {
             // Getting the map selector in DOM
             var div = document.getElementById("map_canvas");
 
@@ -139,13 +163,20 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
                     'zoom': true
                 }
             });
+
+            //TODO https://github.com/mapsplugin/cordova-plugin-googlemaps/issues/791
+            
+            //check http://codepen.io/yafraorg/pen/jBEky
+            //https://gist.github.com/thomasfl/6e9cd0c25e331dc1f42c#file-ionic-map-slide-menu-app-markdown
             //setting the var available on $scope
             $scope.map = map;
 
             // Capturing event when Map load are ready.
             $scope.map.addEventListener(plugin.google.maps.event.MAP_READY, function(){
-
-
+                
+                $scope.map.setVisible(true);
+                $scope.map.setClickable(true);
+                //$ionicSideMenuDelegate.canDragContent(false);
                 // Defining markers for demo
                 /*var markers = [{
                     position: $scope.setPosition(-19.9178713, -43.9603117),
@@ -176,7 +207,7 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
             });
 
 
-        };
+        });
 
 
 
@@ -466,3 +497,65 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
 
 
 });
+
+/**
+ angular.module('ionic.example', ['ionic'])
+
+ .controller('MapCtrl', function($scope, $ionicLoading, $compile) {
+      function initialize() {
+        var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
+
+        var mapOptions = {
+          center: myLatlng,
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map"),
+            mapOptions);
+
+        //Marker + infowindow + angularjs compiled ng-click
+        var contentString = "<div><a ng-click='clickTest()'>Click me!</a></div>";
+        var compiled = $compile(contentString)($scope);
+
+        var infowindow = new google.maps.InfoWindow({
+          content: compiled[0]
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatlng,
+          map: map,
+          title: 'Uluru (Ayers Rock)'
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+
+        $scope.map = map;
+      }
+      ionic.Platform.ready(initialize);
+
+      $scope.centerOnMe = function() {
+        if(!$scope.map) {
+          return;
+        }
+
+        $scope.loading = $ionicLoading.show({
+          content: 'Getting current location...',
+          showBackdrop: false
+        });
+
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+          $scope.loading.hide();
+        }, function(error) {
+          alert('Unable to get location: ' + error.message);
+        });
+      };
+
+      $scope.clickTest = function() {
+        alert('Example of infowindow with ng-click')
+      };
+
+    });
+ */

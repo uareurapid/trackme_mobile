@@ -4,10 +4,6 @@ angular.module('trackme.DeviceUtils', [])
 
         return {
 
-            Hello: function(){
-                return "Hello World!";
-            },
-
             init: function() {
                 var self = this;
                 this.isPhoneGap = typeof cordova !== 'undefined';

@@ -16,7 +16,8 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
 
         //if(!window.localStorage.getItem('serverLocation')) {
-            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//trackme.no-ip.net
+        //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
+            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
         //}
 
         $scope.rememberMe = { checked: true };
@@ -493,7 +494,6 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
   $ionicPlatform.ready(function() {
 
-      console.log(Device.Hello());
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)

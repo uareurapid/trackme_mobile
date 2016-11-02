@@ -43,7 +43,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
                 console.log("isStartupTrackingEnabled() return " + enabledOnStartup);
                 return enabledOnStartup;
             }
-            console.log("isStartupTrackingEnabled() return true");
+
             return true;
         };
 

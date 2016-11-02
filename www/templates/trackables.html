@@ -2,30 +2,29 @@
     <ion-content class="padding" ng-controller="TrackablesController">
 
         <form ng-model="formTrackables">
-            <div class="list">
-                <!--<label class="item item-input">
-                    <input type="email" placeholder="owner" name="email" ng-model="formData.owner">
-                </label>-->
+
+                <ul class="list">
+                    <li class="item" ng-repeat="trackable in trackables" ng-click="openPopover($event,trackable)">
+                        {{trackable.name}}
+
+                    </li>
+                </ul>
 
 
-                <table>
-                    <tr>
-                        <th>Trackable privacy</th>
-                        <th>Trackable name</th>
-                        <th>Trackable description</th>
-                        <th>Trackable type</th>
-                    </tr>
-                    <tr ng-repeat="trackable in trackables">
-                        <td>{{trackable.privacy}}</td>
-                        <td>{{trackable.name}}</td>
-                        <td>{{trackable.description}}</td>
-                        <td>{{trackable.type}}</td>
-                    </tr>
-                </table>
+            <script id="trackable_detail.html" type="text/ng-template">
+                <ion-popover-view>
+                    <ion-header-bar>
+                        <h1 class="title">{{selectedTrackable.name}}</h1>
+                    </ion-header-bar>
+                    <ion-content>
+                        <label for="trackable_privacy">Privacy: </label><div id="trackable_privacy">{{selectedTrackable.privacy}}</div>
+                        <label for="trackable_name">Name: </label><div id="trackable_name">{{selectedTrackable.name}}</div>
+                        <label for="trackable_description">Description: </label><div id="trackable_description">{{selectedTrackable.description}}</div>
+                        <label for="trackable_type">Type: </label><div id="trackable_type">{{selectedTrackable.type}}</div>
+                    </ion-content>
+                </ion-popover-view>
+            </script>
 
-
-            </div>
-            <!--<input type="submit" class="button button-royal button-block" value="Log in"/>-->
         </form>
 
     </ion-content>
