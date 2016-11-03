@@ -25,15 +25,16 @@
             </ion-toggle>
             <ion-toggle ng-model="keepMeLoggedin.checked"
                  ng-change="keepMeLoggedinChanged()">
-                Keep me Logged In for:
+                Keep me Logged In
             </ion-toggle>
 
-                <div class="range" id="green">
+                <div class="range" id="green" ng-show="keepMeLoggedin.checked">
+                    <b>For {{loogedInInterval.minutes}} day(s)</b>
                     <i class="icon ion-ios7-lightbulb-outline"></i>
-                    <input type="range" name="minutes" ng-model="loogedInInterval.minutes">
+                    <input type="range" min="1" max="100" name="minutes" ng-model="loogedInInterval.minutes">
                     <i class="icon ion-ios7-lightbulb"></i>
                 </div>
-                <p>{{loogedInInterval.minutes}} day(s)</p>
+
 
 
 
