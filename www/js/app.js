@@ -17,13 +17,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
+            window.localStorage.setItem('serverLocation','http://localhost:8100');//http://trackme.no-ip.net:8080
         //}
 
         $scope.rememberMe = { checked: true };
         $scope.keepMeLoggedin = { checked: true };
 
-        $scope.data2 = { 'volume' : '50' };
+        $scope.loogedInInterval = { 'minutes' : '50' };
 
         $scope.loggedin_user = "";
 

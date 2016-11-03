@@ -4,7 +4,7 @@
 
 angular.module('trackme.DevicesController', ['ionic','ionic-material'])
 
-    .controller('DevicesController',function ($scope, $state, $http) {
+    .controller('DevicesController',function ($scope, $state, $http, $ionicPopover) {
 
     //clean the form fields
     $scope.formData = {};
@@ -13,6 +13,40 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material'])
 
     var serverLocation = window.localStorage.getItem('serverLocation');
 
+    $scope.selectedDevice = {
+        owner: "",
+        deviceId: "",
+        description: ""
+    };
+
+        //FOR POPOVER
+        // .fromTemplateUrl() method
+        $ionicPopover.fromTemplateUrl('device_detail.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
+
+
+        $scope.openDeviceDetails = function($event,device) {
+            $scope.selectedDevice = device;
+            $scope.popover.show($event);
+        };
+        $scope.closePopover = function() {
+            $scope.popover.hide();
+        };
+        //Cleanup the popover when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.popover.remove();
+        });
+        // Execute action on hidden popover
+        $scope.$on('popover.hidden', function() {
+            // Execute action
+        });
+        // Execute action on remove popover
+        $scope.$on('popover.removed', function() {
+            // Execute action
+        });
     //all these stuff should be on the services, not on the controllers,
     //$http and $resource on services, $scope on controllers
     //like: https://scotch.io/tutorials/setting-up-a-mean-stack-single-page-application

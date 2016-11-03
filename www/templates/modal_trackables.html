@@ -1,18 +1,18 @@
-<ion-modal-view ng-controller="SettingsController">
+<ion-modal-view>
     <ion-header-bar class="bar bar-header bar-positive">
         <h1 class="title">My Trackables</h1>
         <button class="button button-clear button-primary" ng-click="closeModal()">Cancel</button>
     </ion-header-bar>
 
-    <ion-content><!--ng-controller="TrackablesController"-->
+    <ion-content>
 
-        <!--<div class="list">
-            <ion-list>
-                <ion-item ng-repeat="trackable in trackables" ng-click="selectStartupTrackable(trackable)">
+        <div class="list">
+            <ion-list ng-controller="TrackablesController">
+                <ion-item ng-repeat="trackable in trackables" ng-click="selectStartupTrackable(trackable);closeModal()">
                     {{trackable.name}}
                 </ion-item>
             </ion-list>
-        </div>-->
+        </div>
 
         <button class="button button-full button-positive" ng-click="closeModal()">OK</button>
 

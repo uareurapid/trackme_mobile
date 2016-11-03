@@ -5,68 +5,75 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
 
     .controller('SettingsController',function ($scope, $http, $ionicModal) {
 
+        //models for the checkboxes
         $scope.wifiOnly = { checked: true };
-
-        $scope.batchSize = 2;
-
-        //model for the checkboxes
         $scope.batchesSending = { checked: true} ;
+        $scope.batchSize = 2;
         $scope.startupTracking = {checked: true} ;
 
         $scope.data =  {
             startupChoice : 'cdt'
         };
 
-        $scope.wifiOnlyChanged =  function() {
-            console.log("use wifi only" + $scope.wifiOnly.checked);
-        };
 
-        //DO THIS ON INIT
-        var testData = window.localStorage.getItem('startupTracking');
-        var enabledOnStartup = true;
-        if(!testData) {
-            var startupTracking = {
-                startupTrackingEnabled : enabledOnStartup,
-                startupTrackable:null
-            };
-            console.log("setting item on storage");
-            window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
-        }
+        $scope.trackingInterval = { minutes: 1};
 
-        //is enabled?
-        $scope.isStartupTrackingEnabled = function() {
-            console.log("isStartupTrackingEnabled()");
-            var testData = window.localStorage.getItem('startupTracking');
-            if(testData) {
-                var startupTracking = JSON.parse(testData);
-                enabledOnStartup = startupTracking.startupTrackingEnabled;
-                console.log("isStartupTrackingEnabled() return " + enabledOnStartup);
-                return enabledOnStartup;
-            }
+        $scope.batches = {size: 2};
 
-            return true;
-        };
-
-        //save changes
-        $scope.startupTrackingChanged = function() {
-            console.log("startupTrackingChanged()");
-            enabledOnStartup = !enabledOnStartup;
-            var testData = window.localStorage.getItem('startupTracking');
-            if(testData) {
-                var startupTracking = JSON.parse(testData);
-                startupTracking.startupTrackingEnabled = enabledOnStartup;
-                window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
-                console.log("after startupTrackingChanged()");
-            }
-        };
 
         $scope.startupChoicesList = [
             { text: "Choose a default trackable", value: "cdt" },
             { text: "I will choose later", value: "wcl" }
         ];
 
+        //load default preferences
+        var loadDefaultPreferences = function() {
+
+            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+
+            if(!trackingPreferences) {
+
+                trackingPreferences = {
+                    startupTrackingEnabled : $scope.startupTracking.checked,
+                    startupTrackable:null,
+                    batchesEnabled : $scope.batchesSending.checked,
+                    batchesSize: $scope.batches.size,
+                    wifiOnly: $scope.wifiOnly.checked
+                };
+
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+            }
+        };
+
+        //load on startup
+        loadDefaultPreferences();
+
+        $scope.wifiOnlyChanged =  function() {
+
+            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            if(trackingPreferences) {
+                trackingPreferences = JSON.parse(trackingPreferences);
+                trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+            }
+        };
+
+        $scope.startupTrackingChanged = function() {
+
+            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            if(trackingPreferences) {
+                trackingPreferences = JSON.parse(trackingPreferences);
+                trackingPreferences.startupTrackingEnabled = $scope.startupTracking.checked;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+
+            }
+        };
+
+
+
         //*******************************************************
-        $ionicModal.fromTemplateUrl('./templates/modal_trackables.html', {
+
+          $ionicModal.fromTemplateUrl('./templates/modal_trackables.html', {
             scope: $scope,
             animation: 'slide-in-up'
         }).then(function(modal) {
@@ -94,7 +101,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
         //******************************************************
 
         $scope.startupChoiceChanged = function(item) {
-            console.log("item chosed is: " + item.value + $scope.data.startupChoice);
+            alert("item chosed is: " + item.value + $scope.data.startupChoice);
             if(item.value==='cdt') {
                 $scope.openModal();
             }
@@ -104,50 +111,16 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
         //range input change, for revert language direction
         $scope.batchesSwitchChanged = function() {
 
-            console.log('batchesSwitchChanged called');
+            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            if(trackingPreferences) {
+                trackingPreferences = JSON.parse(trackingPreferences);
+                trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
+                trackingPreferences.batchesSize = $scope.batches.size;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
 
-            var divBatchesSize = document.getElementById('invisible_batch_sizes');
-            if(angular.element(divBatchesSize).hasClass('is-hidden')) {
-                angular.element(divBatchesSize).removeClass('is-hidden');
-                angular.element(divBatchesSize).addClass('is-visible');
             }
-            else {
-                angular.element(divBatchesSize).removeClass('is-visible');
-                angular.element(divBatchesSize).addClass('is-hidden');
-            }
-
-            var self = this;
-            var rangeElement = document.getElementById('batches-switch-input');
-
-
-            //---------------------------- try a bubble
-            // Measure width of range input
-            var width = angular.element(rangeElement).clientWidth;// Figure out placement percentage between left and right of input
-            var newPoint = ( angular.element(rangeElement).val() - angular.element(rangeElement).attr("min")) / ( angular.element(rangeElement).attr("max") - angular.element(rangeElement).attr("min"));
-            var newPlace,offset = -1;
-            // Prevent bubble from going beyond left or right (unsupported browsers)
-            if (newPoint < 0) {
-                newPlace = 0;
-            }
-            else if (newPoint > 1) {
-                newPlace = width;
-            }
-            else {
-                newPlace = width * newPoint + offset; offset -= newPoint;
-            }
-
-            // Move bubble
-            //var rangeElementOutput = document.getElementById('.batches-switch-output');
-            angular.element(rangeElement)
-                .next("output")
-                .css({
-                    left: newPlace,
-                    marginLeft: offset*15 + "%",
-                })
-                .text( angular.element(rangeElement).val());
-
 
         };
 
 
-    });
+});

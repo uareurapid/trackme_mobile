@@ -185,11 +185,14 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
     //select a startup trackable
     $scope.selectStartupTrackable = function(trackable) {
         console.log("selected startup trackable: " + trackable);
-        var testData = window.localStorage.getItem('startupTracking');
-        if(testData) {
-            var startupTracking = JSON.parse(testData);
-            startupTracking.startupTrackable = trackable;
-            window.localStorage.setItem('startupTracking',JSON.stringify(startupTracking));
+
+
+        var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+        if(trackingPreferences) {
+            trackingPreferences = JSON.parse(trackingPreferences);
+            trackingPreferences.startupTrackable = trackable;
+            window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+
         }
     };
 
