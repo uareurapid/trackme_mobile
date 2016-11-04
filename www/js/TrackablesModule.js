@@ -24,7 +24,8 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
             privacy: "",
             name: "",
             description: "",
-            type: ""
+            type: "",
+            _id: ""
         };
         //FOR POPOVER
         // .fromTemplateUrl() method
@@ -118,7 +119,7 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
                     //add new received data to the $scope var
                     $scope.trackables = data;
-                    console.log("received: " +data);
+                    console.log("received: " +JSON.stringify(data));
                     isLoadingTrackables = false;
                 })
                 .error(function(data) {
@@ -184,9 +185,9 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
     //select a startup trackable
     $scope.selectStartupTrackable = function(trackable) {
-        console.log("selected startup trackable: " + trackable);
+        console.log("selected startup trackable: " + JSON.stringify(trackable));
 
-
+        //TODO direct mapping here, carefull, check this
         var trackingPreferences = window.localStorage.getItem('trackingPreferences');
         if(trackingPreferences) {
             trackingPreferences = JSON.parse(trackingPreferences);

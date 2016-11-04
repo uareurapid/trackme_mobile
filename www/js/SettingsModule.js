@@ -15,6 +15,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
         $scope.batchesSending = { checked: true} ;
         $scope.batchSize = 2;
         $scope.startupTracking = {checked: true} ;
+        $scope.backgroundTracking = {checked: true} ;
 
         $scope.data =  {
             startupChoice : STARTUP_CHOICE_CHOOSE_LATER_VALUE
@@ -22,8 +23,10 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
         };
 
 
-        $scope.trackingInterval = { minutes: 1};
+        //every 5 minutes interval
+        $scope.trackingInterval = { minutes: 5};
 
+        //send batches of 2 by default
         $scope.batches = {size: 2};
 
         //is there a default trackable selected? if so, show it´s name on the settings
@@ -32,18 +35,21 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
             name: "",
             description: "",
             privacy: "",
-            type: ""
+            type: "",
+            _id: "" //this is the field used in API calls
 
         };
 
         $scope.startupChoicesList = [
-            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + $scope.defaultTrackable, value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
+            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + $scope.defaultTrackable.name, value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
             { text: STARTUP_CHOICE_CHOOSE_LATER_TEXT, value: STARTUP_CHOICE_CHOOSE_LATER_VALUE }
         ];
 
         //load default preferences
         var loadDefaultPreferences = function() {
 
+            //TODO find a better way to deal with JSON, maybe
+            //Awesome local storage for Ionic with ngStorage?
             var trackingPreferences = window.localStorage.getItem('trackingPreferences');
 
             if(!trackingPreferences) {
@@ -53,8 +59,9 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
                     startupTrackable: $scope.defaultTrackable,
                     batchesEnabled : $scope.batchesSending.checked,
                     batchesSize: $scope.batches.size,
-                    wifiOnly: $scope.wifiOnly.checked
-                };
+                    wifiOnly: $scope.wifiOnly.checked,
+                    trackingInterval: $scope.trackingInterval.minutes
+            };
 
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
@@ -67,16 +74,24 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
                 $scope.defaultTrackable.description = trackingPreferences.startupTrackable.description;
                 $scope.defaultTrackable.privacy = trackingPreferences.startupTrackable.privacy;
                 $scope.defaultTrackable.type = trackingPreferences.startupTrackable.type;
+                //we use _id to match the response API
+                $scope.defaultTrackable._id = trackingPreferences.startupTrackable._id;
 
                 $scope.batchesSending.checked = trackingPreferences.batchesEnabled;
                 $scope.batches.size = trackingPreferences.batchesSize;
                 $scope.wifiOnly.checked = trackingPreferences.wifiOnly;
+
+                $scope.trackingInterval.minutes = trackingPreferences.trackingInterval;
 
             }
         };
 
         //load on startup
         loadDefaultPreferences();
+
+        $scope.backgroundTrackingChanged =  function() {
+
+        };
 
         $scope.wifiOnlyChanged =  function() {
 

@@ -42,14 +42,23 @@
             </div>
 
             <div class="item item-divider">
-                Start tracking on startup?
+                Tracking options
             </div>
+
+            <ion-toggle ng-model="backgroundTracking.checked"
+                        ng-change="backgroundTrackingChanged()">
+                Enable background tracking?
+            </ion-toggle>
+
+            <!--<div class="item item-divider">
+                Start tracking on startup?
+            </div>-->
 
             <ion-toggle ng-model="startupTracking.checked"
                         ng-change="startupTrackingChanged()">
                 Start tracking on startup?
             </ion-toggle>
-            <div class="tracking_choice" ng-show="startupTracking.checked">
+            <div class="tracking_choice" ng-show="startupTracking.checked || backgroundTracking.checked">
                 <ion-radio ng-repeat="item in startupChoicesList"
                            ng-value="item.value"
                            ng-model="data.startupChoice"

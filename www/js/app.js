@@ -6,13 +6,13 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
     'trackme.TrackablesController','trackme.MapController','trackme.SettingsController',
-    'trackme.GeoLocationController','GeoLocationService','ionic-material'])
+    'trackme.GeoLocationController','GeoLocationService','PreferencesService','ionic-material'])
 
 
     //TODO check ionic material stuff
     //https://github.com/zachfitz/Ionic-Material
     //DEMO http://ionicmaterial.com/demo/
-    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation) {
+    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation, Preferences) {
 
 
         //if(!window.localStorage.getItem('serverLocation')) {
@@ -46,12 +46,14 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         $scope.formLogin.user = "";
         $scope.formLogin.pass = "";
 
-        var credentials = window.localStorage.getItem( 'userCredentials');
+        var credentials = Preferences.loadSavedCredentials();
         if(credentials) {
-            credentials = JSON.parse(credentials);
             $scope.formLogin.user = credentials.username;
             $scope.formLogin.pass =  credentials.password;
         }
+
+        ///loads default saved settings
+        $scope.savedPreferences = Preferences.loadDefaultPreferences();
 
         //remember me option changed
         $scope.rememberMeChanged =  function() {
@@ -94,31 +96,28 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                         $scope.expires = data.expires;
                         $scope.token = data.token;
 
+
+                        if($scope.rememberMe.checked) {
+                            //add to local storage
+                            Preferences.saveCredentials($scope.formLogin.user,$scope.formLogin.pass);
+                        }
+                        else {
+                            //forget it
+                            if(window.localStorage.getItem('userCredentials')) {
+                                window.localStorage.removeItem('userCredentials');
+                            }
+
+                        }
+
+                        //Save user sensitive data
                         var userData = {
                             status: data.status,
                             email: data.email,
                             expires: data.expires,
                             token: data.token
                         };
-                    if($scope.rememberMe.checked) {
-                        var userCredentials = {
-                            username: $scope.formLogin.user,
-                            password: $scope.formLogin.pass
-                        };
 
-                        //add to local storage
-                        window.localStorage.setItem( 'userCredentials',JSON.stringify(userCredentials));
-
-                    }
-                    else {
-                        //forget it
-                        if(window.localStorage.getItem('userCredentials')) {
-                            window.localStorage.removeItem('userCredentials');
-                        }
-
-                    }
-
-                    window.localStorage.setItem( 'userData',JSON.stringify(userData));
+                        Preferences.setUserData(userData);
                         console.log("navigate to home/map page, and broadcastmessage...");
                         //$state.go('devices');
                         $state.go('app.home');
@@ -145,7 +144,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         // TODO THIS IS DUPLICATED SHOULD BE A SERVICE??
         $scope.getUserDevices = function( callback ) {
 
-            var userData = JSON.parse( window.localStorage.getItem( 'userData'));
+            var userData = Preferences.getUserData();
             if(userData) {
                 console.log("devicesmodule: getting all available devices for username: " + userData.email);
 
@@ -171,38 +170,24 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     });
             }
             else {
-                console.log("no user data");
+                console.log("no user data available");
             }
 
 
         };
 
-        // A confirm dialog
+        $scope.alertImpossibleTrackWithDevice = function() {
+
+            $ionicPopup.alert({
+                title: 'Tracking Device',
+                content: 'You need to add this device as a tracking device, before you can start tracking!'
+            }).then(function(res) {
+                console.log('ok accepted');
+            });
+        };
+
+        // A confirm dialog for adding this device as a tracking device
         $scope.showConfirm = function(confirm, deny) {
-
-            /*$scope.deviceData = {};
-
-            var confirmPopup = $ionicPopup.show({
-                template: '<input type="text" name="dev_description" ng-model="deviceData.description">',
-                title: 'Add new device?',
-                subTitle: 'Add this device as new tracking device?',
-                scope: $scope,
-                buttons: [
-                    { text: 'Cancel' },
-                    {
-                        text: '<b>Save</b>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            if (!$scope.deviceData.description) {
-                                //don't allow the user to close unless he enters device description
-                                e.preventDefault();
-                            } else {
-                                return $scope.deviceData.description;
-                            }
-                        }
-                    }
-                ]
-            });*/
 
             var confirmPopup = $ionicPopup.confirm({
                 title: 'Add new device',
@@ -251,23 +236,31 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 if(!exists) {
 
 
-                    //----------
+                    //------------------- SAVE DEVICE ----------------------------
 
                     $scope.showConfirm( function() {
                             //user confirmed
-                            var deviceData = {
-                                deviceId: deviceIdentifier,
-                                deviceDescription: deviceDescription
-                            };
+                            Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
                             //save data for prefill();
-                            window.localStorage.setItem( 'deviceData',JSON.stringify(deviceData));
+
                             //navigate
                             $state.go('app.add_devices');
                         },
                         function () {
                             //user denied, do nothing
+                            $scope.alertImpossibleTrackWithDevice();
                         });
-
+                    //--------------------------------------------------------------
+                }
+                else {
+                    //device already exists, start tracking on startup?
+                    if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
+                        alert("will start tracking now with interval: " +$scope.savedPreferences.trackingInterval);
+                        GeoLocation.startTrackingLocation($scope.savedPreferences.trackingInterval);
+                    }
+                    else {
+                        alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
+                    }
                 }
 
             });

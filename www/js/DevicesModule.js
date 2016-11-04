@@ -78,6 +78,7 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material'])
 
          var apiPath = serverLocation +'/api/devices';
 
+         //TODO update this call, use the Preferences service
          var userData = JSON.parse( window.localStorage.getItem( 'userData'));
          if(userData) {
              console.log(userData.email);
@@ -107,6 +108,7 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material'])
                  }
 
                  //save the id coming from the api/database
+                 //TODO use the same field names returned by the API if possible
                  deviceData.id = data._id;
                  //update the values on local storage
                  window.localStorage.setItem('deviceData',JSON.stringify(deviceData));
