@@ -2,9 +2,9 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.DevicesController', ['ionic','ionic-material'])
+angular.module('trackme.DevicesController', ['ionic','ionic-material','PreferencesService'])
 
-    .controller('DevicesController',function ($scope, $state, $http, $ionicPopover) {
+    .controller('DevicesController',function ($scope, $state, $http, $ionicPopover,Preferences) {
 
     //clean the form fields
     $scope.formData = {};
@@ -93,27 +93,26 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material'])
           .success(function(data) {
                console.log("received devices response: " + data);
 
-                 //TODO only after confirmation
-               //window.localStorage.setItem("deviceId",$scope.formData.deviceId);
+               //TODO only after confirmation
 
-                 //get the prefilled data
-                 var deviceData = JSON.parse( window.localStorage.getItem( 'deviceData'));
+               //get the prefilled data
+               var deviceData = Preferences.loadDefaultDevice();
 
-                 //if form values are different from saved data, update them
-                 if($scope.formData.deviceId!==deviceData.deviceId) {
-                     deviceData.deviceId = $scope.formData.deviceId;
-                 }
-                 if($scope.formData.deviceDescription!==deviceData.deviceDescription) {
-                     deviceData.deviceDescription = $scope.formData.deviceDescription;
-                 }
+               //if form values are different from saved data, update them
+               if($scope.formData.deviceId!==deviceData.deviceId) {
+                   deviceData.deviceId = $scope.formData.deviceId;
+               }
+               if($scope.formData.deviceDescription!==deviceData.deviceDescription) {
+                   deviceData.deviceDescription = $scope.formData.deviceDescription;
+               }
 
-                 //save the id coming from the api/database
-                 //TODO use the same field names returned by the API if possible
-                 deviceData.id = data._id;
-                 //update the values on local storage
-                 window.localStorage.setItem('deviceData',JSON.stringify(deviceData));
+               //save the id coming from the api/database
+               //TODO use the same field names returned by the API if possible
+               deviceData.id = data._id;
+               //update the values on local storage
+               Preferences.saveDefaultDevice(deviceData.deviceId,deviceData.deviceDescription);
 
-                 console.log("just added device with deviceData: " + JSON.stringify(deviceData));
+               console.log("just added device with deviceData: " + JSON.stringify(deviceData));
 
                $scope.formData.deviceId = ""; // clear the form so our user is ready to enter another
                $scope.formData.deviceDescription = "";

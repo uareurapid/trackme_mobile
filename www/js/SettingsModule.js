@@ -1,9 +1,9 @@
 /**
  * Created by paulocristo on 13/05/16.
  */
-angular.module('trackme.SettingsController', ['ionic','ionic-material'])
+angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocationService','PreferencesService'])
 
-    .controller('SettingsController',function ($scope, $http, $ionicModal) {
+    .controller('SettingsController',function ($scope, $http, $ionicModal, GeoLocation,Preferences) {
 
         var STARTUP_CHOICE_CHOOSE_LATER_VALUE = 'wcl';
         var STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE = 'cdt';
@@ -40,17 +40,12 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
 
         };
 
-        $scope.startupChoicesList = [
-            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + $scope.defaultTrackable.name, value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
-            { text: STARTUP_CHOICE_CHOOSE_LATER_TEXT, value: STARTUP_CHOICE_CHOOSE_LATER_VALUE }
-        ];
-
         //load default preferences
         var loadDefaultPreferences = function() {
 
             //TODO find a better way to deal with JSON, maybe
             //Awesome local storage for Ionic with ngStorage?
-            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            var trackingPreferences = Preferences.loadDefaultPreferences();
 
             if(!trackingPreferences) {
 
@@ -61,7 +56,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
                     batchesSize: $scope.batches.size,
                     wifiOnly: $scope.wifiOnly.checked,
                     trackingInterval: $scope.trackingInterval.minutes
-            };
+                };
 
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
@@ -89,6 +84,12 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
         //load on startup
         loadDefaultPreferences();
 
+        //create the options list
+        $scope.startupChoicesList = [
+            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + $scope.defaultTrackable.name, value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
+            { text: STARTUP_CHOICE_CHOOSE_LATER_TEXT, value: STARTUP_CHOICE_CHOOSE_LATER_VALUE }
+        ];
+
         $scope.backgroundTrackingChanged =  function() {
 
         };
@@ -114,11 +115,22 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
             }
         };
 
+        //apply changes
+        $scope.applyNewPreferences = function() {
+
+            if(GeoLocation.isTrackingInProgress()) {
+                //stop the current tracking
+                GeoLocation.stopTrackingLocation();
+                //restart tracking with new settings
+                GeoLocation.startTrackingLocation();
+            }
+
+        };
 
 
-        //*******************************************************
+        //******************* TRACKABLES MODAL ************************************
 
-          $ionicModal.fromTemplateUrl('./templates/modal_trackables.html', {
+        $ionicModal.fromTemplateUrl('./templates/modal_trackables.html', {
             scope: $scope,
             animation: 'slide-in-up'
         }).then(function(modal) {
@@ -151,7 +163,6 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material'])
                 $scope.startupChoicesList[0].text = STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT +
                     " ( " + $scope.defaultTrackable.name + " )";
 
-                alert("selected: " + $scope.defaultTrackable);
             }
             // Execute action
         });

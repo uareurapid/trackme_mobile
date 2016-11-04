@@ -7,87 +7,53 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
     //TODO SHOULD BE A SERVICE, NOT A CONTROLLER
     .service('GeoLocation', function($interval, $http, Preferences) {
 
-        var stopGeolocation;
 
-        var trackable = Preferences.loadDefaultPreferences();
-        var device = Preferences.loadDefaultDevice();
-        var userData = Preferences.getUserData();
+        var self = this;
 
-        //call the server API here
-        this.sendRecordToServer = function(position) {
+        //load all needed info
+        self.trackingPreferences = Preferences.loadDefaultPreferences();
+        self.device = Preferences.loadDefaultDevice();
+        self.userData = Preferences.getUserData();
+        self.stopGeolocation = undefined;
+        self.isTracking = false;
 
-            if(userData && trackable && device) {
-                console.log("adding new record: " + geoPosition +" for username: " + userData.email);
+        //------------------- call the server API here -------------------------
+        self.sendRecordToServer = function(position) {
+
+            if(self.trackingPreferences && self.trackingPreferences.startupTrackable && self.device && self.userData) {
 
                 var serverLocation = window.localStorage.getItem('serverLocation');
                 var apiPath = serverLocation +'/api/records';
 
-                /**
-                 * $http.post('/api/devices', $scope.formData)
-                 .success(function(data) {
-
-                $scope.formData.deviceId = ""; // clear the form so our user is ready to enter another
-                $scope.formData.deviceDescription = "";
-                //do not clear $scope.formData.owner
-
-                //get all updated/devices list again
-                $scope.getUserDevices();
-            })
-                 .error(function(data) {
-                console.log('Error: ' + data);
-            });
-                 */
-
-                //---------------- API -----------------
-                /*
-                 name: recName,
-                 description: recDescription,
-                 latitude: req.body.latitude,
-                 longitude : req.body.longitude,
-                 time: timeOfRecord,
-                 trackableId: req.body.trackableId,
-                 deviceId: req.body.deviceId,
-                 done: false
-                 */
-                //--------------------------------------
+                var payload = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    trackableId: self.trackingPreferences.startupTrackable._id,
+                    deviceId: self.device.id
+                };
 
                 $http({
                     method  : 'POST',
                     url     : apiPath,
-                    transformRequest: function(obj) {
-                        var str = [];
-                        for(var p in obj)
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        return str.join("&");
-                    },
-                    data: {
-                          latitude: position.coords.latitude,
-                          longitude: position.coords.longitude,
-                          trackableId: trackable._id,
-                          deviceId: device.id
-                    },
-                    headers : { 'Authorization': 'Bearer ' + userData.token }  // set the headers so angular passing info as form data (not request payload)
+                    data: JSON.stringify(payload),
+                    headers : { 'Authorization': 'Bearer ' + self.userData.token }  // set the headers so angular passing info as form data (not request payload)
                 })
-                    //$http.get(apiPath)
                     .success(function(data) {
-                        $scope.devices = data;
-                        console.log(data);
-                        //send the data to the callback function
-                        if(callback && typeof callback === 'function') {
-                            callback(data);
-                        }
+
+                        alert("received" + JSON.stringify(data));
+
                     })
                     .error(function(data) {
                         console.log('Error: ' + data);
                     });
             }
             else {
-                console.log("no user data or device or trackable info!!!!");
+                alert("no user data or device or trackable info!!!!");
             }
 
         };
-
-        this.getCoordinates = function () {
+        //Get location and send it to the server
+        self.getCoordinates = function () {
 
             // onSuccess Callback
             // This method accepts a Position object, which contains the
@@ -104,7 +70,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     'Timestamp: '         + position.timestamp                + '\n');
 
                 //send the record to the server
-                this.sendRecordToServer(position);
+                self.sendRecordToServer(position);
             };
 
 
@@ -121,25 +87,43 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                 navigator.geolocation.getCurrentPosition(onSuccess, onError,{enableHighAccuracy: true});
             }
             else {
-                alert("no geolocation system!");
+                alert("no geolocation system available!");
             }
 
         };
 
+        //start traking
+        self.startTrackingLocation = function() {
 
-        this.startTrackingLocation = function(minutesInterval) {
+            self.isTracking = true;
+
+            self.trackingPreferences = Preferences.loadDefaultPreferences();
+            var minutesInterval = self.trackingPreferences.trackingInterval || 2; //will default to 2 minutes while testing
+            alert("startTrackingLocation trackingPreferences:" + JSON.stringify(self.trackingPreferences));
+            self.device = Preferences.loadDefaultDevice();
+            alert("startTrackingLocation device:" + JSON.stringify(self.device));
+            self.userData = Preferences.getUserData();
+            alert("startTrackingLocation userdata:" + JSON.stringify(self.userData));
+
             var delay = minutesInterval * 60 *1000; //delay must be in miliseconds (tracking interval in the settings is in minutes)
             //returns a promise that we can cancel
-            alert("will call again in delay miliseconds: " + delay);
-            stopGeolocation = $interval(this.getCoordinates,delay);
+            self.stopGeolocation = $interval(self.getCoordinates,delay);
             //invoke the get location every minutesInterval
+
+
         };
 
-        this.stopTrackingLocation = function() {
-            if(stopGeolocation) {
-                $interval.cancel(stopGeolocation);
-                stopGeolocation = undefined;
+        //stop tracking
+        self.stopTrackingLocation = function() {
+            if(self.stopGeolocation) {
+                $interval.cancel(self.stopGeolocation);
+                self.stopGeolocation = undefined;
             }
+            self.isTracking = false;
+        };
+
+        self.isTrackingInProgress = function() {
+            return self.isTracking;
         };
 
 });

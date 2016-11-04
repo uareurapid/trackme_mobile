@@ -6,7 +6,9 @@ var SettingsService = angular.module('PreferencesService', [])
     //TODO SHOULD BE A SERVICE, NOT A CONTROLLER
     .service('Preferences', function() {
 
-        this.loadDefaultPreferences = function() {
+        var self = this;
+
+        self.loadDefaultPreferences = function() {
             //Awesome local storage for Ionic with ngStorage?
             var trackingPreferences = window.localStorage.getItem('trackingPreferences');
 
@@ -39,7 +41,7 @@ var SettingsService = angular.module('PreferencesService', [])
         };
 
         //this holds login data, like email, status and token
-        this.getUserData = function() {
+        self.getUserData = function() {
             var userData = window.localStorage.getItem('userData');
             if(userData) {
                 userData = JSON.parse(userData);
@@ -47,14 +49,14 @@ var SettingsService = angular.module('PreferencesService', [])
             return userData;
         };
 
-        this.setUserData = function(userData) {
+        self.setUserData = function(userData) {
             if(userData) {
                 window.localStorage.setItem('userData',JSON.stringify(userData));
             }
         };
 
         //this holds only credentials (user + pass)
-        this.loadSavedCredentials = function() {
+        self.loadSavedCredentials = function() {
             var credentials = window.localStorage.getItem('userCredentials');
             if(credentials) {
                 credentials = JSON.parse(credentials);
@@ -62,7 +64,7 @@ var SettingsService = angular.module('PreferencesService', [])
             return credentials;
         };
 
-        this.saveCredentials = function(username,password) {
+        self.saveCredentials = function(username,password) {
             var userCredentials = {
                 username: username,
                 password: password
@@ -71,7 +73,7 @@ var SettingsService = angular.module('PreferencesService', [])
             window.localStorage.setItem('userCredentials',JSON.stringify(userCredentials));
         };
 
-        this.saveDefaultDevice = function(deviceIdentifier,deviceDescription) {
+        self.saveDefaultDevice = function(deviceIdentifier,deviceDescription) {
             var deviceData = {
                 deviceId: deviceIdentifier,
                 deviceDescription: deviceDescription
@@ -80,7 +82,7 @@ var SettingsService = angular.module('PreferencesService', [])
             window.localStorage.setItem('deviceData',JSON.stringify(deviceData));
         };
 
-        this.loadDefaultDevice = function() {
+        self.loadDefaultDevice = function() {
             var deviceData = window.localStorage.getItem('deviceData');
             if(deviceData) {
                 deviceData = JSON.parse(deviceData);

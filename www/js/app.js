@@ -17,7 +17,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://localhost:8100');//http://trackme.no-ip.net:8080
+            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
         //}
 
         $scope.rememberMe = { checked: true };
@@ -211,17 +211,33 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         $scope.checkUserDevices = function() {
 
+            var currentDevice = Preferences.loadDefaultDevice();
+
+            //default dummy stuff
             var deviceIdentifier = "My Device Id";//dummy id, just in case
             var deviceDescription = "My Device Description";
 
-            //The cordova-plugin-device plugin defines a global device object,
-            if(window.device) {
-                deviceIdentifier = device.uuid;
-                deviceDescription = device.name;
+            //if it exists, read its data
+            if(currentDevice) {
+                deviceIdentifier = currentDevice.deviceId;
+                deviceDescription = currentDevice.deviceDescription;
+            }
+            else {
+                //otherwise create a new one
+
+                //The cordova-plugin-device plugin defines a global device object,
+                if(window.device) {
+                    deviceIdentifier = device.uuid;
+                    deviceDescription = device.name;
+                }
+
+                //save it!
+                Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
             }
 
             console.log("device id/name: " + deviceIdentifier);
 
+            //Get all the user devices and see if this one was already added
             $scope.getUserDevices( function(data) {
                 var exists = false;
                 //callback function for success
@@ -238,10 +254,11 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
                     //------------------- SAVE DEVICE ----------------------------
 
+                    //prompt the user to add this new device, and go to de devices page, with the device data already with default values prefilled
                     $scope.showConfirm( function() {
                             //user confirmed
-                            Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
-                            //save data for prefill();
+                            //Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
+                            //save data for form prefill();
 
                             //navigate
                             $state.go('app.add_devices');
