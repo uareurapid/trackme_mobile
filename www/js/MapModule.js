@@ -2,9 +2,9 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.MapController', ['ionic','ionic-material'])
+angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesService'])
 
-.controller('MapController',function ($scope, $http, $ionicPopover,$ionicPlatform,$ionicSideMenuDelegate) {
+.controller('MapController',function ($scope, $http, $ionicPopover,$ionicPlatform,$ionicSideMenuDelegate, Preferences) {
 
         var serverLocation = window.localStorage.getItem('serverLocation');
 
@@ -117,7 +117,7 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
             //optional param if you want to refresh you can pass null undefined or false or empty arg
             //$scope.map.control.refresh($scope.map.center);//{latitude: 32.779680, longitude: -79.935493}
             //$scope.map.control.getGMap().setZoom($scope.map.zoom);
-
+            alert("adding " + $scope.mapMarkers.length + " markers to the map!");
             for (var i = 0; i < $scope.mapMarkers.length; i++) {
                 $scope.map.addMarker({
                     'title': $scope.mapMarkers[i].title,
@@ -310,51 +310,52 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
 
         $scope.trackableChanged = function(trackableFilter) {
 
+            if(window.plugin) {
 
-            var userData = JSON.parse( window.localStorage.getItem( 'userData'));
-            var apiPath = serverLocation +'/api/records';
+                var userData = Preferences.getUserData();
+                var apiPath = serverLocation + '/api/records';
 
-            //TODO change the backend, i do not need (or should) to pass the owner (should be only mines)
-            if(trackableFilter==null) {
-                trackableFilter = "Show all";
-            }
-            else {
-                apiPath = apiPath + "?trackable_id=" + trackableFilter;
-            }
-            console.log("apiPath: " + apiPath);
+                //TODO change the backend, i do not need (or should) to pass the owner (should be only mines)
+                if (trackableFilter == null) {
+                    trackableFilter = "Show all";
+                }
+                else {
+                    apiPath = apiPath + "?trackable_id=" + trackableFilter;
+                }
+                console.log("apiPath: " + apiPath);
 
-            //clear markers
-            var markers = [];
-
-
-            $http({
-                method  : 'GET',
-                url     : apiPath,
-                headers : { 'Authorization': 'Bearer ' + userData.token }  // set the headers so angular passing info as form data (not request payload)
-            }).success(function(data) {
-                $scope.records = data;
-                console.log("received" + JSON.stringify(data));
-
-                //TODO, this is wrong the line should be always between records of same trackable (even if from different devices?)
-                //TODO and the values should be returned in order/date no?? otherwise the lines are not correct
-                var previous = 0;
-                var current = 0;
-                var currentTrackableId = "";
-                var previousTrackableId = "";
-
-                for(var i=0; i< data.length; i++) {
-
-                    var latitude = data[i].latitude;
-                    var longitude = data[i].longitude;
-                    //TODO
-                    markers.push(createRecordMarker(i, latitude, longitude/*, $scope.map.bounds*/));
-                    console.log("created marker for position lat:" + latitude + ",lng: " + longitude);
-
-                    /**************** handle poly lines ***************************************/
+                //clear markers
+                var markers = [];
 
 
-                        if(i > 0) {
-                            previous = i-1;
+                $http({
+                    method: 'GET',
+                    url: apiPath,
+                    headers: {'Authorization': 'Bearer ' + userData.token}  // set the headers so angular passing info as form data (not request payload)
+                }).success(function (data) {
+                    $scope.records = data;
+                    console.log("received" + JSON.stringify(data));
+
+                    //TODO, this is wrong the line should be always between records of same trackable (even if from different devices?)
+                    //TODO and the values should be returned in order/date no?? otherwise the lines are not correct
+                    var previous = 0;
+                    var current = 0;
+                    var currentTrackableId = "";
+                    var previousTrackableId = "";
+
+                    for (var i = 0; i < data.length; i++) {
+
+                        var latitude = data[i].latitude;
+                        var longitude = data[i].longitude;
+                        //TODO
+                        markers.push(createRecordMarker(i, latitude, longitude/*, $scope.map.bounds*/));
+                        console.log("created marker for position lat:" + latitude + ",lng: " + longitude);
+
+                        /**************** handle poly lines ***************************************/
+
+
+                        if (i > 0) {
+                            previous = i - 1;
                             previousTrackableId = data[previous].trackableId;
                         }
                         current = i;
@@ -367,18 +368,18 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
                         current = i;
 
 
-                        if( (current!==previous && current > previous) && (previousTrackableId===currentTrackableId) ) {
+                        if ((current !== previous && current > previous) && (previousTrackableId === currentTrackableId)) {
                             //run the loop again BAD!!!
 
                             $scope.map.addPolyline({
                                 points: [
-                                    $scope.setPosition(data[previous].latitude,data[previous].longitude),
-                                    $scope.setPosition(data[current].latitude,data[current].longitude)
+                                    $scope.setPosition(data[previous].latitude, data[previous].longitude),
+                                    $scope.setPosition(data[current].latitude, data[current].longitude)
                                 ],
-                                'color' : '#AA00FF',
+                                'color': '#AA00FF',
                                 'width': 10,
                                 'geodesic': true
-                            }, function(polyline) {
+                            }, function (polyline) {
 
                                 //setTimeout(function() {
                                 //    polyline.remove();
@@ -387,113 +388,110 @@ angular.module('trackme.MapController', ['ionic','ionic-material'])
 
 
                             /*console.log("ADDING A POLYLINE!!!!!");
-                            $scope.polylines  = [
-                                {
-                                    id: i,
-                                    path: [
-                                        {
-                                            latitude: data[previous].latitude,
-                                            longitude: data[previous].longitude
-                                        },
-                                        {
-                                            latitude: data[current].latitude,
-                                            longitude: data[current].longitude
-                                        }
-                                    ],
+                             $scope.polylines  = [
+                             {
+                             id: i,
+                             path: [
+                             {
+                             latitude: data[previous].latitude,
+                             longitude: data[previous].longitude
+                             },
+                             {
+                             latitude: data[current].latitude,
+                             longitude: data[current].longitude
+                             }
+                             ],
 
-                                    stroke: {
-                                        color: '#6060FB',
-                                        weight: 3
-                                    },
-                                    editable: false,
-                                    draggable: false,
-                                    geodesic: true,
-                                    visible: true,
-                                    icons: [{
-                                        icon: {
-                                            path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
-                                        },
-                                        offset: '25px',
-                                        repeat: '50px'
-                                    }]
-                                }
-                            ];*/
+                             stroke: {
+                             color: '#6060FB',
+                             weight: 3
+                             },
+                             editable: false,
+                             draggable: false,
+                             geodesic: true,
+                             visible: true,
+                             icons: [{
+                             icon: {
+                             path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+                             },
+                             offset: '25px',
+                             repeat: '50px'
+                             }]
+                             }
+                             ];*/
 
                         }
 
 
-                    /**************************************************************************/
+                        /**************************************************************************/
 
 
+                    }
+                    //TODO
+                    $scope.refreshMap(markers);
+                })
+                    .error(function (data) {
+                        console.log('Error: ' + data);
+                    });
 
-
-
-                }
-                //TODO
-                $scope.refreshMap(markers);
-            })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                });
+            }
 
         };
 
         $scope.deviceChanged = function(deviceFilter) {
 
+            if(window.plugin) {
 
-            var userData = JSON.parse( window.localStorage.getItem( 'userData'));
-            console.log("mapmodule: getting all available devices for username: " + userData.email);
+                var userData = Preferences.getUserData();
+                console.log("mapmodule: getting all available devices for username: " + userData.email);
 
-            var serverLocation = window.localStorage.getItem('serverLocation');
-            var apiPath = serverLocation +'/api/records';
+                var serverLocation = window.localStorage.getItem('serverLocation');
+                var apiPath = serverLocation +'/api/records';
 
 
-            if(deviceFilter==null) {
-                deviceFilter = "Show all";
-            }
-            else {
-                apiPath = apiPath + "?device_id=" + deviceFilter;
-            }
-            console.log("device changed to: " + deviceFilter + " apiPath: " + apiPath);
-
-            //clear markers
-            var markers = [];
-            $http({
-                method  : 'GET',
-                url     : apiPath,
-                headers : { 'Authorization': 'Bearer ' + userData.token }
-                // set the headers
-            }).success(function(data) {
-                $scope.records = data;
-                console.log("received" + JSON.stringify(data));
-                for(var i=0; i< data.length; i++) {
-
-                    var latitude = data[i].latitude;
-                    var longitude = data[i].longitude;
-                    markers.push(createRecordMarker(i, latitude, longitude/*, $scope.map.bounds*/));
+                if(deviceFilter==null) {
+                    deviceFilter = "Show all";
                 }
-                $scope.refreshMap(markers);
-            })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                });
+                else {
+                    apiPath = apiPath + "?device_id=" + deviceFilter;
+                }
+                console.log("device changed to: " + deviceFilter + " apiPath: " + apiPath);
+
+                //clear markers
+                var markers = [];
+                $http({
+                    method  : 'GET',
+                    url     : apiPath,
+                    headers : { 'Authorization': 'Bearer ' + userData.token }
+                    // set the headers
+                }).success(function(data) {
+                    $scope.records = data;
+                    console.log("received" + JSON.stringify(data));
+                    for(var i=0; i< data.length; i++) {
+
+                        var latitude = data[i].latitude;
+                        var longitude = data[i].longitude;
+                        markers.push(createRecordMarker(i, latitude, longitude/*, $scope.map.bounds*/));
+                    }
+                    $scope.refreshMap(markers);
+                })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+            }
+
+
+
 
         };
 
-        //the filtering options are on a popup
-        /*
-        $ionicPopover.fromTemplateUrl('templates/filtering.html', {
-            scope: $scope,
-        }).then(function(popover) {
-            $scope.popover = popover;
-        });
-
-        // Triggered on a button click, or some other target
-        $scope.openPopover = function($event) {
-            console.log("sow popover");
-            $scope.popover.show($event);
-        };*/
-
+        if(window.plugin) {
+            //load the map
+            var defaultDevice = Preferences.loadDefaultDevice();
+            if(defaultDevice && defaultDevice.deviceId) {
+                $scope.deviceChanged(defaultDevice.deviceId);
+            }
+        }
 
 
 });

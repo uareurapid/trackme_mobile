@@ -40,6 +40,20 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
 
         };
 
+        var savePreferences =  function() {
+
+            var trackingPreferences = Preferences.loadDefaultPreferences();
+            trackingPreferences.startupTrackingEnabled = $scope.startupTracking.checked;
+            trackingPreferences.startupTrackable = $scope.defaultTrackable;
+            trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
+            trackingPreferences.batchesSize = $scope.batches.size;
+            trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
+            trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;
+
+            alert("save preferences: " + JSON.stringify(trackingPreferences));
+            window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+        };
+
         //load default preferences
         var loadDefaultPreferences = function() {
 
@@ -47,38 +61,23 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             //Awesome local storage for Ionic with ngStorage?
             var trackingPreferences = Preferences.loadDefaultPreferences();
 
-            if(!trackingPreferences) {
+            //they exist, read them
+            $scope.startupTracking.checked = trackingPreferences.startupTrackingEnabled;
+            //get all the info
+            $scope.defaultTrackable.name = trackingPreferences.startupTrackable.name;
+            $scope.defaultTrackable.description = trackingPreferences.startupTrackable.description;
+            $scope.defaultTrackable.privacy = trackingPreferences.startupTrackable.privacy;
+            $scope.defaultTrackable.type = trackingPreferences.startupTrackable.type;
+            //we use _id to match the response API
+            $scope.defaultTrackable._id = trackingPreferences.startupTrackable._id;
 
-                trackingPreferences = {
-                    startupTrackingEnabled : $scope.startupTracking.checked,
-                    startupTrackable: $scope.defaultTrackable,
-                    batchesEnabled : $scope.batchesSending.checked,
-                    batchesSize: $scope.batches.size,
-                    wifiOnly: $scope.wifiOnly.checked,
-                    trackingInterval: $scope.trackingInterval.minutes
-                };
+            $scope.batchesSending.checked = trackingPreferences.batchesEnabled;
+            $scope.batches.size = trackingPreferences.batchesSize;
+            $scope.wifiOnly.checked = trackingPreferences.wifiOnly;
 
-                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
-            }
-            else {
-                //they exist, read them
-                trackingPreferences = JSON.parse(trackingPreferences);
-                $scope.startupTracking.checked = trackingPreferences.startupTrackingEnabled;
-                //get all the info
-                $scope.defaultTrackable.name = trackingPreferences.startupTrackable.name;
-                $scope.defaultTrackable.description = trackingPreferences.startupTrackable.description;
-                $scope.defaultTrackable.privacy = trackingPreferences.startupTrackable.privacy;
-                $scope.defaultTrackable.type = trackingPreferences.startupTrackable.type;
-                //we use _id to match the response API
-                $scope.defaultTrackable._id = trackingPreferences.startupTrackable._id;
+            $scope.trackingInterval.minutes = trackingPreferences.trackingInterval;
 
-                $scope.batchesSending.checked = trackingPreferences.batchesEnabled;
-                $scope.batches.size = trackingPreferences.batchesSize;
-                $scope.wifiOnly.checked = trackingPreferences.wifiOnly;
 
-                $scope.trackingInterval.minutes = trackingPreferences.trackingInterval;
-
-            }
         };
 
         //load on startup
@@ -96,9 +95,8 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
 
         $scope.wifiOnlyChanged =  function() {
 
-            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            var trackingPreferences = Preferences.loadDefaultPreferences();
             if(trackingPreferences) {
-                trackingPreferences = JSON.parse(trackingPreferences);
                 trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
@@ -106,17 +104,41 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
 
         $scope.startupTrackingChanged = function() {
 
-            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
+            var trackingPreferences = Preferences.loadDefaultPreferences();
             if(trackingPreferences) {
-                trackingPreferences = JSON.parse(trackingPreferences);
                 trackingPreferences.startupTrackingEnabled = $scope.startupTracking.checked;
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
 
             }
         };
 
+        $scope.trackingIntervalChanged = function() {
+
+            var trackingPreferences = Preferences.loadDefaultPreferences();
+            if(trackingPreferences) {
+                trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+
+            }
+        };
+
+        //range input change, for revert language direction
+        $scope.batchesSwitchChanged = function() {
+
+            var trackingPreferences = Preferences.loadDefaultPreferences();
+            if(trackingPreferences) {
+                trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
+                trackingPreferences.batchesSize = $scope.batches.size;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+
+            }
+
+        };
+
         //apply changes
         $scope.applyNewPreferences = function() {
+
+            savePreferences();
 
             if(GeoLocation.isTrackingInProgress()) {
                 //stop the current tracking
@@ -150,21 +172,12 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
         });
         // Execute action on hide modal
         $scope.$on('modal.hidden', function() {
-            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
-            if(trackingPreferences) {
-                trackingPreferences = JSON.parse(trackingPreferences);
-                //save all the fields
-                $scope.defaultTrackable.name = trackingPreferences.startupTrackable.name;
-                $scope.defaultTrackable.privacy = trackingPreferences.startupTrackable.privacy;
-                $scope.defaultTrackable.description = trackingPreferences.startupTrackable.description;
-                $scope.defaultTrackable.type = trackingPreferences.startupTrackable.type;
 
-                //update the label
-                $scope.startupChoicesList[0].text = STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT +
-                    " ( " + $scope.defaultTrackable.name + " )";
+            loadDefaultPreferences();
+            //update the selected trackable label after reading the preferences
+            $scope.startupChoicesList[0].text = STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT +
+                " ( " + $scope.defaultTrackable.name + " )";
 
-            }
-            // Execute action
         });
         // Execute action on remove modal
         $scope.$on('modal.removed', function() {
@@ -174,26 +187,9 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
         //******************************************************
 
         $scope.startupChoiceChanged = function(item) {
-            alert("item chosed is: " + item.value + $scope.data.startupChoice);
             if(item.value===STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE) {
                 $scope.openModal();
             }
         };
-
-
-        //range input change, for revert language direction
-        $scope.batchesSwitchChanged = function() {
-
-            var trackingPreferences = window.localStorage.getItem('trackingPreferences');
-            if(trackingPreferences) {
-                trackingPreferences = JSON.parse(trackingPreferences);
-                trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
-                trackingPreferences.batchesSize = $scope.batches.size;
-                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
-
-            }
-
-        };
-
 
 });

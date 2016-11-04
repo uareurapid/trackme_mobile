@@ -24,6 +24,7 @@ var SettingsService = angular.module('PreferencesService', [])
 
                 };
 
+                //default values
                 trackingPreferences = {
                     startupTrackingEnabled: true,
                     startupTrackable: defaultTrackable,
@@ -33,11 +34,13 @@ var SettingsService = angular.module('PreferencesService', [])
                     trackingInterval: 5
                 };
 
+                //save them now
                 window.localStorage.setItem('trackingPreferences', JSON.stringify(trackingPreferences));
+                //get them back
+                trackingPreferences = window.localStorage.getItem('trackingPreferences');
             }
             //return the JSON object
-            trackingPreferences = JSON.parse(trackingPreferences);
-            return trackingPreferences;
+            return JSON.parse(trackingPreferences);
         };
 
         //this holds login data, like email, status and token

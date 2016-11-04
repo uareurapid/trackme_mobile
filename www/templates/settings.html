@@ -18,7 +18,7 @@
             <div class="range" id="green">
                 <b>Every {{trackingInterval.minutes}} minute(s)</b>
                 <i class="icon ion-ios7-lightbulb-outline"></i>
-                <input type="range" min="1" max="60" step="1" name="track_minutes" ng-model="trackingInterval.minutes">
+                <input type="range" min="1" max="60" step="1" name="track_minutes" ng-change="trackingIntervalChanged()" ng-model="trackingInterval.minutes">
                 <i class="icon ion-ios7-lightbulb"></i>
             </div>
 
@@ -37,7 +37,7 @@
             <div class="range" id="green">
                 <b>Batches size: {{batches.size}}</b>
                 <i class="icon ion-ios7-lightbulb-outline"></i>
-                <input type="range" min="2" max="20" step="1" id="batches_size" name="batches_size" ng-model="batches.size">
+                <input type="range" min="2" max="20" step="1" id="batches_size" ng-change="batchesSwitchChanged()" name="batches_size" ng-model="batches.size">
                 <i class="icon ion-ios7-lightbulb"></i>
             </div>
 
