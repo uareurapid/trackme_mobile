@@ -146,6 +146,8 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
             //if(Device.isPhoneGap) {
             // Invoking Map using Google Map SDK v2 by dubcanada
             var map = plugin.google.maps.Map.getMap(div,{
+
+                'mapType': plugin.google.maps.MapTypeId.NORMAL,
                 'camera': {
                     'latLng': $scope.setPosition(32.779680, -79.935493),//this is the initial position
                     'zoom': 4
@@ -485,13 +487,13 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
 
         };
 
-        if(window.plugin) {
+        //if(window.plugin) {
             //load the map
             var defaultDevice = Preferences.loadDefaultDevice();
             if(defaultDevice && defaultDevice.deviceId) {
                 $scope.deviceChanged(defaultDevice.deviceId);
             }
-        }
+        //}
 
 
 });

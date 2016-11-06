@@ -60,14 +60,14 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
             // current GPS coordinates
             //
             var onSuccess = function(position) {
-                alert('Latitude: '          + position.coords.latitude          + '\n' +
+                /*alert('Latitude: '          + position.coords.latitude          + '\n' +
                     'Longitude: '         + position.coords.longitude         + '\n' +
                     'Altitude: '          + position.coords.altitude          + '\n' +
                     'Accuracy: '          + position.coords.accuracy          + '\n' +
                     'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
                     'Heading: '           + position.coords.heading           + '\n' +
                     'Speed: '             + position.coords.speed             + '\n' +
-                    'Timestamp: '         + position.timestamp                + '\n');
+                    'Timestamp: '         + position.timestamp                + '\n');*/
 
                 //send the record to the server
                 self.sendRecordToServer(position);
@@ -99,11 +99,8 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
 
             self.trackingPreferences = Preferences.loadDefaultPreferences();
             var minutesInterval = self.trackingPreferences.trackingInterval || 2; //will default to 2 minutes while testing
-            alert("startTrackingLocation trackingPreferences:" + JSON.stringify(self.trackingPreferences));
             self.device = Preferences.loadDefaultDevice();
-            alert("startTrackingLocation device:" + JSON.stringify(self.device));
             self.userData = Preferences.getUserData();
-            alert("startTrackingLocation userdata:" + JSON.stringify(self.userData));
 
             var delay = minutesInterval * 60 *1000; //delay must be in miliseconds (tracking interval in the settings is in minutes)
             //returns a promise that we can cancel

@@ -3,6 +3,7 @@ Starter using **Google Maps Native SDK v2** and **[Ionic Framework](http://ionic
 
 <img src="https://cloud.githubusercontent.com/assets/1680157/9290919/b8dc1e5c-437a-11e5-8c91-e047e4810351.png">
 
+#NO MAP TROUBLSHOOTING https://github.com/mapsplugin/cordova-plugin-googlemaps/wiki/TroubleShooting:-Blank-Map
 
 Special thanks to **[wf9a5m75](https://github.com/wf9a5m75/)** for create the plugin used in this integration and all collaborators of Ionic Framework, Cordova Project and Cordova Plugins.
 

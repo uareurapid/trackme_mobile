@@ -50,7 +50,6 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
             trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;
 
-            alert("save preferences: " + JSON.stringify(trackingPreferences));
             window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
         };
 
@@ -83,9 +82,15 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
         //load on startup
         loadDefaultPreferences();
 
+        //check if we have a default trackable
+        var hasDefaultTrackable = function() {
+          return  $scope.defaultTrackable.name.length > 0;
+        };
+
         //create the options list
         $scope.startupChoicesList = [
-            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + $scope.defaultTrackable.name, value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
+            { text: STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT + (hasDefaultTrackable() ? " (" + $scope.defaultTrackable.name + " )" : $scope.defaultTrackable.name),
+                value: STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE },
             { text: STARTUP_CHOICE_CHOOSE_LATER_TEXT, value: STARTUP_CHOICE_CHOOSE_LATER_VALUE }
         ];
 
@@ -140,13 +145,18 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
 
             savePreferences();
 
-            if(GeoLocation.isTrackingInProgress()) {
-                //stop the current tracking
-                GeoLocation.stopTrackingLocation();
+            //and restart again if everything is set
+            if($scope.startupTracking.checked && $scope.defaultTrackable.name) {
+
+                //if already tracking...
+                if(GeoLocation.isTrackingInProgress()) {
+                    //then stop the current tracking
+                    GeoLocation.stopTrackingLocation();
+
+                }
                 //restart tracking with new settings
                 GeoLocation.startTrackingLocation();
             }
-
         };
 
 
@@ -176,7 +186,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             loadDefaultPreferences();
             //update the selected trackable label after reading the preferences
             $scope.startupChoicesList[0].text = STARTUP_CHOICE_CHOOSE_DEFAULT_TEXT +
-                " ( " + $scope.defaultTrackable.name + " )";
+                (hasDefaultTrackable() ? " (" + $scope.defaultTrackable.name + " )" : $scope.defaultTrackable.name);
 
         });
         // Execute action on remove modal

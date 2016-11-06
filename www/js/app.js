@@ -272,8 +272,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 else {
                     //device already exists, start tracking on startup?
                     if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
-                        alert("will start tracking now with interval: " +$scope.savedPreferences.trackingInterval);
-                        GeoLocation.startTrackingLocation($scope.savedPreferences.trackingInterval);
+                        GeoLocation.startTrackingLocation();
                     }
                     else {
                         alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
