@@ -1,7 +1,8 @@
 <ion-view view-title="My Account">
     <ion-content class="padding" scroll="false">
         <div>
-        Username: {{loggedin_user}}
+        Username: <strong>{{loggedin_user}}</strong>
         </div>
+        <p><a href="#" ng-click="logout()">Logout</a></p>
     </ion-content>
 </ion-view>

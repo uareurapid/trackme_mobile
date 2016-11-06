@@ -6,18 +6,18 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
     'trackme.TrackablesController','trackme.MapController','trackme.SettingsController',
-    'trackme.GeoLocationController','GeoLocationService','PreferencesService','ionic-material'])
+    'trackme.GeoLocationController','GeoLocationService','PreferencesService','ionic-material','ngCookies'])
 
 
     //TODO check ionic material stuff
     //https://github.com/zachfitz/Ionic-Material
     //DEMO http://ionicmaterial.com/demo/
-    .controller('MainController', function($scope, $http, $state, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation, Preferences) {
+    .controller('MainController', function($scope, $http, $state, $cookies, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation, Preferences) {
 
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
+            window.localStorage.setItem('serverLocation','http://localhost:8100');//http://trackme.no-ip.net:8080
         //}
 
         $scope.rememberMe = { checked: true };
@@ -49,6 +49,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         var credentials = Preferences.loadSavedCredentials();
         if(credentials) {
             $scope.formLogin.user = credentials.username;
+            $scope.loggedin_user = credentials.username;
             $scope.formLogin.pass =  credentials.password;
         }
 
@@ -62,6 +63,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         $scope.keepMeLoggedinChanged =  function() {
 
+        };
+
+        $scope.logout = function() {
+
+            // Removing a cookie
+            $cookies.remove('trackme_session');
+            $state.go('front');
         };
 
         // process the form
@@ -117,6 +125,8 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                             token: data.token
                         };
 
+                        // Put cookie
+                        $cookies.put('trackme_session',userData);
                         Preferences.setUserData(userData);
                         console.log("navigate to home/map page, and broadcastmessage...");
                         //$state.go('devices');

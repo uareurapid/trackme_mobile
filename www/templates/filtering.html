@@ -71,7 +71,7 @@
                         <form role="form">
 
                             <label for="filter_by_device">Filter by device:</label>
-                            <select id="filter_by_device" ng-model="selectedDevice" ng-change="deviceChanged(selectedDevice)" ng-options="device._id as device.deviceId for device in devices">
+                            <select id="filter_by_device" ng-model="selectedDevice" ng-change="deviceChanged(selectedDevice)" ng-options="device._id as device.description for device in devices">
                                 <option value="">Show all</option>
                             </select>
 

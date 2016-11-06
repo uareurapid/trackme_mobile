@@ -176,5 +176,5 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
      };
     //call it immediatelly
     // TODO this should be cached and loaded on demand, and not called all the time when the page loads
-    //$scope.getUserDevices();
+    $scope.getUserDevices();
 });
