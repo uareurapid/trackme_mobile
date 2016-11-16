@@ -156,7 +156,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
                 }
                 //restart tracking with new settings
                 GeoLocation.startTrackingLocation();
-            }
+            }else alert("do nothing");
         };
 
 

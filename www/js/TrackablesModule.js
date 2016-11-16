@@ -75,6 +75,10 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
         console.log("privacy changed to: " + $scope.formTrackablesData.privacy);
     };
 
+    //TODO CODE ME
+    $scope.startTracking = function(trackable){
+
+    };
 
     //############ GET THE TRACKABLE OWNER #####################################
     $scope.getTrackableOwner = function(successCallback, errorCallback) {

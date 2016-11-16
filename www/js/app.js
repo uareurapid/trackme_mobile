@@ -17,7 +17,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://localhost:8100');//http://trackme.no-ip.net:8080
+            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
         //}
 
         $scope.rememberMe = { checked: true };
@@ -226,6 +226,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             //default dummy stuff
             var deviceIdentifier = "My Device Id";//dummy id, just in case
             var deviceDescription = "My Device Description";
+            var id = "dummy";
 
             //if it exists, read its data
             if(currentDevice) {
@@ -234,15 +235,14 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             }
             else {
                 //otherwise create a new one
-
                 //The cordova-plugin-device plugin defines a global device object,
                 if(window.device) {
                     deviceIdentifier = device.uuid;
                     deviceDescription = device.name;
                 }
 
-                //save it!
-                Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
+                //save it! (will get the database id later, after success)
+                Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription,id);
             }
 
             console.log("device id/name: " + deviceIdentifier);
@@ -285,6 +285,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                         GeoLocation.startTrackingLocation();
                     }
                     else {
+                        //TODO alert the user, add/select trackable
                         alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
                     }
                 }

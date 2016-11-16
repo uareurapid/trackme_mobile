@@ -76,10 +76,11 @@ var SettingsService = angular.module('PreferencesService', [])
             window.localStorage.setItem('userCredentials',JSON.stringify(userCredentials));
         };
 
-        self.saveDefaultDevice = function(deviceIdentifier,deviceDescription) {
+        self.saveDefaultDevice = function(deviceIdentifier,deviceDescription, id) {
             var deviceData = {
                 deviceId: deviceIdentifier,
-                deviceDescription: deviceDescription
+                deviceDescription: deviceDescription,
+                _id: id //the database id
             };
             //save data for prefill();
             window.localStorage.setItem('deviceData',JSON.stringify(deviceData));

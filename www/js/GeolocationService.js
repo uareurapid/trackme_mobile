@@ -25,12 +25,15 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                 var serverLocation = window.localStorage.getItem('serverLocation');
                 var apiPath = serverLocation +'/api/records';
 
+                //API add record payload
                 var payload = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
-                    trackableId: self.trackingPreferences.startupTrackable._id,
-                    deviceId: self.device.id
+                    trackableId: self.trackingPreferences.startupTrackable._id, //this is the database ID
+                    deviceId: self.device._id //this is the database ID
                 };
+
+                alert("will send: " + JSON.stringify(payload));
 
                 $http({
                     method  : 'POST',
@@ -84,7 +87,8 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
             }
             //see https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/
             if(navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(onSuccess, onError,{enableHighAccuracy: true});
+                alert("has geolocation");
+                navigator.geolocation.getCurrentPosition(onSuccess, onError,{timeout: 20000,enableHighAccuracy: true});
             }
             else {
                 alert("no geolocation system available!");
@@ -95,6 +99,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
         //start traking
         self.startTrackingLocation = function() {
 
+            alert("start tracking");
             self.isTracking = true;
 
             self.trackingPreferences = Preferences.loadDefaultPreferences();

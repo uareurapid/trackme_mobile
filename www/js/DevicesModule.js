@@ -108,9 +108,9 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
 
                //save the id coming from the api/database
                //TODO use the same field names returned by the API if possible
-               deviceData.id = data._id;
+               deviceData._id = data._id;
                //update the values on local storage
-               Preferences.saveDefaultDevice(deviceData.deviceId,deviceData.deviceDescription);
+               Preferences.saveDefaultDevice(deviceData.deviceId,deviceData.deviceDescription,deviceData._id);
 
                console.log("just added device with deviceData: " + JSON.stringify(deviceData));
 
