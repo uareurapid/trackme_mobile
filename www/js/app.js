@@ -6,8 +6,8 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
     'trackme.TrackablesController','trackme.MapController','trackme.SettingsController',
-    'trackme.GeoLocationController','GeoLocationService','PreferencesService','ionic-material','ngCookies'])
-
+    'GeoLocationService','PreferencesService','ionic-material','ngCookies'])
+//removed 'trackme.GeoLocationController',
 
     //TODO check ionic material stuff
     //https://github.com/zachfitz/Ionic-Material
@@ -17,7 +17,8 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://trackme.no-ip.net:8080');//http://trackme.no-ip.net:8080
+            window.localStorage.setItem('serverLocation','http://trackme-app.herokuapp.com');//http://trackme.no-ip.net:8080
+        //TODO use https https://trackme-app.herokuapp.com
         //}
 
         $scope.rememberMe = { checked: true };
@@ -245,13 +246,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription,id);
             }
 
-            console.log("device id/name: " + deviceIdentifier);
+            alert("device id/name: " + deviceIdentifier);
 
             //Get all the user devices and see if this one was already added
             $scope.getUserDevices( function(data) {
                 var exists = false;
                 //callback function for success
-                console.log("callback called with data: " + JSON.stringify(data));
+                alert("callback called with data: " + JSON.stringify(data));
                 for (var i = 0; i < data.length; i++) {
                     if(data[i].deviceId==deviceIdentifier) {
                         exists = true;

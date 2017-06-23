@@ -1,9 +1,9 @@
 /**
  * Created by paulocristo on 13/05/16.
  */
-angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocationService','PreferencesService'])
+angular.module('trackme.SettingsController', ['ionic','ionic-material','PreferencesService','GeoLocationService'])
 
-    .controller('SettingsController',function ($scope, $http, $ionicModal, GeoLocation,Preferences) {
+    .controller('SettingsController',function ($scope, $http, $ionicModal, $ionicPopup, Preferences, GeoLocation) {
 
         var STARTUP_CHOICE_CHOOSE_LATER_VALUE = 'wcl';
         var STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE = 'cdt';
@@ -12,6 +12,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
 
         //models for the checkboxes
         $scope.wifiOnly = { checked: true };
+        $scope.allowSMS = { checked: false };
         $scope.batchesSending = { checked: true} ;
         $scope.batchSize = 2;
         $scope.startupTracking = {checked: true} ;
@@ -48,6 +49,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
             trackingPreferences.batchesSize = $scope.batches.size;
             trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
+            trackingPreferences.allowSMS = $scope.allowSMS.checked;
             trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;
 
             window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
@@ -73,6 +75,8 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             $scope.batchesSending.checked = trackingPreferences.batchesEnabled;
             $scope.batches.size = trackingPreferences.batchesSize;
             $scope.wifiOnly.checked = trackingPreferences.wifiOnly;
+
+            $scope.allowSMS.checked = trackingPreferences.allowSMS;
 
             $scope.trackingInterval.minutes = trackingPreferences.trackingInterval;
 
@@ -103,6 +107,31 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','GeoLocat
             var trackingPreferences = Preferences.loadDefaultPreferences();
             if(trackingPreferences) {
                 trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
+                //if wifi only, disable SMS
+                trackingPreferences.allowSMS = !trackingPreferences.wifiOnly;
+                $scope.allowSMS.checked = trackingPreferences.allowSMS;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
+            }
+        };
+
+        $scope.allowSMSChanged =  function() {
+
+            if(!$scope.allowSMS.checked && !$scope.wifiOnly.checked) {
+
+                $ionicPopup.alert({
+                    title: 'Network Preferences',
+                    content: 'You need to provide at least one valid option'
+                }).then(function(res) {
+                    console.log('ok accepted');
+                    return;
+                });
+
+                return;
+            }
+
+            var trackingPreferences = Preferences.loadDefaultPreferences();
+            if(trackingPreferences) {
+                trackingPreferences.allowSMS = $scope.allowSMS.checked;
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
         };

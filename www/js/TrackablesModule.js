@@ -4,9 +4,9 @@
 
 //trackables controller
 
-angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material'])
+angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material','PreferencesService'])
 
-.controller('TrackablesController',function ($scope, /*$cookies,*/ $http, $ionicPopover) {
+.controller('TrackablesController',function ($scope, /*$cookies,*/ $http, $ionicPopover, Preferences) {
 
     $scope.testme = function() {
         $scope.$emit("testme", {});
@@ -77,7 +77,30 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
     //TODO CODE ME
     $scope.startTracking = function(trackable){
+     if(trackable) {
+         Preferences.setPreferableTrackable(trackable);
+     }
+    };
 
+    $scope.stopTracking = function(trackable){
+
+        var defaultTrackable = {
+            name: "",
+            description: "",
+            privacy: "",
+            type: "",
+            _id: "" //this is the field used in API calls
+
+        };
+        Preferences.setPreferableTrackable(defaultTrackable);
+    };
+
+    $scope.isBeingTracked = function(trackable) {
+
+        var trackingPreferences = Preferences.loadDefaultPreferences();
+        if(trackingPreferences.startupTrackable && trackingPreferences.startupTrackingEnabled) {
+            return trackable.name===trackingPreferences.startupTrackable.name;
+        }
     };
 
     //############ GET THE TRACKABLE OWNER #####################################
@@ -213,6 +236,8 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
                 console.log('Error: ' + data);
             });
     };
+
+
 
 
 });

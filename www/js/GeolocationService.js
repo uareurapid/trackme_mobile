@@ -2,10 +2,9 @@
  * Created by paulocristo on 24/10/2016.
  */
 
-var GeoLocationService = angular.module('GeoLocationService', ['PreferencesService'])
+var GeoLocationService = angular.module('GeoLocationService', ['PreferencesService','SMSService'])
 
-    //TODO SHOULD BE A SERVICE, NOT A CONTROLLER
-    .service('GeoLocation', function($interval, $http, Preferences) {
+    .service('GeoLocation', function($interval, $http, Preferences, SMSSender) {
 
 
         var self = this;
@@ -20,10 +19,59 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
         //------------------- call the server API here -------------------------
         self.sendRecordToServer = function(position) {
 
-            if(self.trackingPreferences && self.trackingPreferences.startupTrackable && self.device && self.userData) {
+
+            //the call to the server API is here!
+            var send = function(payload, isBatch){
 
                 var serverLocation = window.localStorage.getItem('serverLocation');
                 var apiPath = serverLocation +'/api/records';
+
+
+
+
+                var finalPayload = null;
+                if(isBatch) {
+                    //payload is an array here
+                    finalPayload = {
+                        batch : payload
+                    };
+                    finalPayload = JSON.stringify(finalPayload);
+
+                }
+                else {
+                    finalPayload = JSON.stringify(payload);
+                }
+
+                alert("payload: " + JSON.stringify(finalPayload));
+
+                if(self.trackingPreferences.allowSMS) {
+                    alert("will send SMS");
+                    SMSSender.sendSMS("12.34556,37.6347347");
+                }
+
+                $http({
+                    method  : 'POST',
+                    url     : apiPath,
+                    data: finalPayload,
+                    headers : { 'Authorization': 'Bearer ' + self.userData.token }  // set the headers so angular passing info as form data (not request payload)
+                })
+                    .success(function(data) {
+
+                        alert("received" + JSON.stringify(data));
+                        if(isBatch) {
+                            //clear the batch
+                            window.localStorage.setItem('batchPayload',[]);
+                        }
+
+                    })
+                    .error(function(data) {
+                        console.log('Error: ' + data);
+                    });
+            };
+
+            if(self.trackingPreferences && self.trackingPreferences.startupTrackable && self.device && self.userData) {
+
+
 
                 //API add record payload
                 var payload = {
@@ -33,22 +81,37 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     deviceId: self.device._id //this is the database ID
                 };
 
-                alert("will send: " + JSON.stringify(payload));
+                if(self.trackingPreferences.batchesEnabled) {
+                    var size = self.trackingPreferences.batchesSize;
+                    alert("batch size: " + size);
+                    var batchPayload = window.localStorage.getItem('batchPayload');
+                    if(!batchPayload) {
+                        batchPayload = [];
+                    }
+                    else {
+                      batchPayload = JSON.parse(batchPayload);
+                    }
+                    alert("after get: " + JSON.stringify(batchPayload));
+                    if(batchPayload.length < size) {
+                        //just add the record to the batch, but do not send it yet
+                        batchPayload.push(payload);
+                        //save updated version
+                        window.localStorage.setItem('batchPayload', JSON.stringify(batchPayload));
+                        return;
+                    }
+                    else {
+                        //send the batch and clear it afterwards
+                        //batch is full
+                        send(batchPayload, true);
+                    }
+                }
+                else {
+                    //just send normally one record!
+                    send(payload, false);
+                }
 
-                $http({
-                    method  : 'POST',
-                    url     : apiPath,
-                    data: JSON.stringify(payload),
-                    headers : { 'Authorization': 'Bearer ' + self.userData.token }  // set the headers so angular passing info as form data (not request payload)
-                })
-                    .success(function(data) {
 
-                        alert("received" + JSON.stringify(data));
 
-                    })
-                    .error(function(data) {
-                        console.log('Error: ' + data);
-                    });
             }
             else {
                 alert("no user data or device or trackable info!!!!");
@@ -73,6 +136,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     'Timestamp: '         + position.timestamp                + '\n');*/
 
                 //send the record to the server
+                //if is in batch, wait until is fill
                 self.sendRecordToServer(position);
             };
 

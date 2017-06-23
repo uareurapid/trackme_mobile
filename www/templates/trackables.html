@@ -16,17 +16,19 @@
                     <ion-header-bar class="bar bar-royal">
                         <h1 class="title">{{selectedTrackable.name}}</h1>
                     </ion-header-bar>
-                    <>
+                    <ion-content>
                         <label for="trackable_privacy">Privacy: </label><div id="trackable_privacy">{{selectedTrackable.privacy}}</div>
                         <label for="trackable_name">Name: </label><div id="trackable_name">{{selectedTrackable.name}}</div>
                         <label for="trackable_description">Description: </label><div id="trackable_description">{{selectedTrackable.description}}</div>
                         <label for="trackable_type">Type: </label><div id="trackable_type">{{selectedTrackable.type}}</div>
-                        <input type="button" value="Start tracking" ng-click="startTracking(selectedTrackable)"/>
+                        <input type="button" value="Start tracking" ng-show="!isBeingTracked(selectedTrackable)" ng-click="startTracking(selectedTrackable)"/>
+                        <input type="button" value="Stop tracking" ng-show="isBeingTracked(selectedTrackable)" ng-click="startTracking(selectedTrackable)"/>
                     </ion-content>
                 </ion-popover-view>
             </script>
 
         </form>
 
+        <input type="button" value="Send SMS" ng-click="sendSMS()"/>
     </ion-content>
 </ion-view>

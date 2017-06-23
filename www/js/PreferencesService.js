@@ -1,9 +1,9 @@
 /**
  * Created by paulocristo on 03/11/2016.
  */
-var SettingsService = angular.module('PreferencesService', [])
+var PreferencesService = angular.module('PreferencesService', [])
+    //was SettingsService
 
-    //TODO SHOULD BE A SERVICE, NOT A CONTROLLER
     .service('Preferences', function() {
 
         var self = this;
@@ -41,6 +41,28 @@ var SettingsService = angular.module('PreferencesService', [])
             }
             //return the JSON object
             return JSON.parse(trackingPreferences);
+        };
+
+        self.savePreferences = function(trackingPreferences) {
+
+            /*var trackingPreferences = Preferences.loadDefaultPreferences();
+            trackingPreferences.startupTrackingEnabled = $scope.startupTracking.checked;
+            trackingPreferences.startupTrackable = $scope.defaultTrackable;
+            trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
+            trackingPreferences.batchesSize = $scope.batches.size;
+            trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
+            trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;*/
+
+            if(trackingPreferences) {
+                window.localStorage.setItem('trackingPreferences', JSON.stringify(trackingPreferences));
+            }
+        };
+
+        //update the preferable trackable (only one at the time!!!)
+        self.setPreferableTrackable = function(trackable) {
+            var trackingPreferences = self.loadDefaultPreferences();
+            trackingPreferences.startupTrackable = trackable;
+            window.localStorage.setItem('trackingPreferences', JSON.stringify(trackingPreferences));
         };
 
         //this holds login data, like email, status and token
