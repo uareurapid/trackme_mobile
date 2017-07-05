@@ -26,9 +26,6 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                 var serverLocation = window.localStorage.getItem('serverLocation');
                 var apiPath = serverLocation +'/api/records';
 
-
-
-
                 var finalPayload = null;
                 if(isBatch) {
                     //payload is an array here
@@ -42,12 +39,9 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     finalPayload = JSON.stringify(payload);
                 }
 
-                alert("payload: " + JSON.stringify(finalPayload));
-
-                if(self.trackingPreferences.allowSMS) {
-                    alert("will send SMS");
+                /*if(self.trackingPreferences.allowSMS) {
                     SMSSender.sendSMS("12.34556,37.6347347");
-                }
+                }*/
 
                 $http({
                     method  : 'POST',
@@ -57,7 +51,6 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                 })
                     .success(function(data) {
 
-                        alert("received" + JSON.stringify(data));
                         if(isBatch) {
                             //clear the batch
                             window.localStorage.setItem('batchPayload',[]);
@@ -83,7 +76,6 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
 
                 if(self.trackingPreferences.batchesEnabled) {
                     var size = self.trackingPreferences.batchesSize;
-                    alert("batch size: " + size);
                     var batchPayload = window.localStorage.getItem('batchPayload');
                     if(!batchPayload) {
                         batchPayload = [];
@@ -91,7 +83,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     else {
                       batchPayload = JSON.parse(batchPayload);
                     }
-                    alert("after get: " + JSON.stringify(batchPayload));
+
                     if(batchPayload.length < size) {
                         //just add the record to the batch, but do not send it yet
                         batchPayload.push(payload);
@@ -151,8 +143,11 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
             }
             //see https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/
             if(navigator.geolocation) {
-                alert("has geolocation");
-                navigator.geolocation.getCurrentPosition(onSuccess, onError,{timeout: 20000,enableHighAccuracy: true});
+                navigator.geolocation.getCurrentPosition(onSuccess, onError,{
+                    //timeout: 20000, removed the timeout because of https://stackoverflow.com/questions/20239846/android-geolocation-using-phonegap-code-3-error
+                    //maximumAge:30000,
+                    enableHighAccuracy: true
+                });
             }
             else {
                 alert("no geolocation system available!");
@@ -163,7 +158,6 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
         //start traking
         self.startTrackingLocation = function() {
 
-            alert("start tracking");
             self.isTracking = true;
 
             self.trackingPreferences = Preferences.loadDefaultPreferences();
@@ -179,11 +173,19 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
 
         };
 
+        //pause (for instance if on background and not enabed background tracking)
+        self.pauseTrackingLocation = function() {
+           if(self.isTrackingInProgress()) {
+               self.stopTrackingLocation();
+           }
+        };
+
         //stop tracking
         self.stopTrackingLocation = function() {
             if(self.stopGeolocation) {
                 $interval.cancel(self.stopGeolocation);
                 self.stopGeolocation = undefined;
+                alert("stop tracking called");
             }
             self.isTracking = false;
         };

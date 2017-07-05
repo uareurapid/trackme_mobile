@@ -92,7 +92,7 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
                 //latitude: lat,
                 //longitude: lng,
                 'position': $scope.setPosition(lat,lng),
-                'title': 'marker_' + i,
+                'title': 'marker_' + i + '<br/>Location: ' + '(' + lat + '),('+  lng + ')'
                 /*options: {
                     labelContent : 'Paulo Cristo',
                     labelAnchor: "36 61",
@@ -117,7 +117,6 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
             //optional param if you want to refresh you can pass null undefined or false or empty arg
             //$scope.map.control.refresh($scope.map.center);//{latitude: 32.779680, longitude: -79.935493}
             //$scope.map.control.getGMap().setZoom($scope.map.zoom);
-            alert("adding " + $scope.mapMarkers.length + " markers to the map!");
             for (var i = 0; i < $scope.mapMarkers.length; i++) {
                 $scope.map.addMarker({
                     'title': $scope.mapMarkers[i].title,
@@ -211,105 +210,6 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
 
         });
 
-
-
-        // Get the bounds from the map once it's loaded
-        /*
-        $scope.$watch(function() {
-            return $scope.map.bounds;
-        }, function(nv, ov) {
-
-            console.log("generating new map...");
-
-            // Only need to regenerate once
-            if (!ov.southwest && nv.southwest) {
-                var markers = [];
-
-                $scope.polylines = [];
-                // when landing on the page, get all todos and show them
-                $http.get('/api/records')
-                    .success(function(data) {
-                        console.log("records: " + JSON.stringify(data));
-
-                        //TODO, this is wrong the line should be always between records of same trackable (even if from different devices?)
-                        //TODO and the values should be returned in order/date no?? otherwise the lines are not correct
-                        var previous = 0;
-                        var current = 0;
-                        var currentTrackableId = "";
-                        var previousTrackableId = "";
-                        for(var i=0; i< data.length; i++) {
-
-                            if(i > 0) {
-                                previous = i-1;
-                                previousTrackableId = data[previous].trackableId;
-                            }
-                            current = i;
-                            currentTrackableId = data[current].trackableId;
-
-                            var latitude = data[i].latitude;
-                            var longitude = data[i].longitude;
-                            markers.push(createRecordMarker(i,latitude, longitude, $scope.map.bounds));
-
-                            current = i;
-
-
-                            if( (current!=previous && current > previous) && (previousTrackableId===currentTrackableId) ) {
-                                //run the loop again BAD!!!
-                                console.log("ADDING A POLYLINE!!!!!");
-                                $scope.polylines  = [
-                                    {
-                                        id: i,
-                                        path: [
-                                            {
-                                                latitude: data[previous].latitude,
-                                                longitude: data[previous].longitude
-                                            },
-                                            {
-                                                latitude: data[current].latitude,
-                                                longitude: data[current].longitude
-                                            }
-                                        ],
-
-                                        stroke: {
-                                            color: '#6060FB',
-                                            weight: 3
-                                        },
-                                        editable: false,
-                                        draggable: false,
-                                        geodesic: true,
-                                        visible: true,
-                                        icons: [{
-                                            icon: {
-                                                path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
-                                            },
-                                            offset: '25px',
-                                            repeat: '50px'
-                                        }]
-                                    }
-                                ];
-
-                            }
-
-                        }
-
-
-
-
-
-
-
-                        //$scope.records = data;
-                        console.log(data);
-                    })
-                    .error(function(data) {
-                        console.log('Error: ' + data);
-                    });
-
-
-                $scope.mapMarkers = markers;
-            }
-        }, true);*/
-
         $scope.trackableChanged = function(trackableFilter) {
             alert($scope.selectedTrackable);
             if(window.plugin) {
@@ -378,49 +278,30 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
                                     $scope.setPosition(data[previous].latitude, data[previous].longitude),
                                     $scope.setPosition(data[current].latitude, data[current].longitude)
                                 ],
-                                'color': '#AA00FF',
-                                'width': 10,
-                                'geodesic': true
+                                'color': '#6060FB',
+                                'width': 3,
+                                'geodesic': true,
+                                'editable': false,
+                                'draggable': false,
+                                'visible': true,
+
+                                //NOT supported on V2 (plugin uses it)
+                                /*icons: [{
+                                    icon: {
+                                        //https://developers.google.com/maps/documentation/javascript/symbols
+                                        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+                                    },
+                                    offset: '25px',
+                                    repeat: '50px'
+                                }]*/
+
+
                             }, function (polyline) {
 
-                                //setTimeout(function() {
-                                //    polyline.remove();
-                                //}, 3000);
                             });
 
 
-                            /*console.log("ADDING A POLYLINE!!!!!");
-                             $scope.polylines  = [
-                             {
-                             id: i,
-                             path: [
-                             {
-                             latitude: data[previous].latitude,
-                             longitude: data[previous].longitude
-                             },
-                             {
-                             latitude: data[current].latitude,
-                             longitude: data[current].longitude
-                             }
-                             ],
 
-                             stroke: {
-                             color: '#6060FB',
-                             weight: 3
-                             },
-                             editable: false,
-                             draggable: false,
-                             geodesic: true,
-                             visible: true,
-                             icons: [{
-                             icon: {
-                             path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
-                             },
-                             offset: '25px',
-                             repeat: '50px'
-                             }]
-                             }
-                             ];*/
 
                         }
 
@@ -498,65 +379,3 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
 
 
 });
-
-/**
- angular.module('ionic.example', ['ionic'])
-
- .controller('MapCtrl', function($scope, $ionicLoading, $compile) {
-      function initialize() {
-        var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
-
-        var mapOptions = {
-          center: myLatlng,
-          zoom: 16,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map"),
-            mapOptions);
-
-        //Marker + infowindow + angularjs compiled ng-click
-        var contentString = "<div><a ng-click='clickTest()'>Click me!</a></div>";
-        var compiled = $compile(contentString)($scope);
-
-        var infowindow = new google.maps.InfoWindow({
-          content: compiled[0]
-        });
-
-        var marker = new google.maps.Marker({
-          position: myLatlng,
-          map: map,
-          title: 'Uluru (Ayers Rock)'
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.open(map,marker);
-        });
-
-        $scope.map = map;
-      }
-      ionic.Platform.ready(initialize);
-
-      $scope.centerOnMe = function() {
-        if(!$scope.map) {
-          return;
-        }
-
-        $scope.loading = $ionicLoading.show({
-          content: 'Getting current location...',
-          showBackdrop: false
-        });
-
-        navigator.geolocation.getCurrentPosition(function(pos) {
-          $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-          $scope.loading.hide();
-        }, function(error) {
-          alert('Unable to get location: ' + error.message);
-        });
-      };
-
-      $scope.clickTest = function() {
-        alert('Example of infowindow with ng-click')
-      };
-
-    });
- */

@@ -28,6 +28,7 @@ var PreferencesService = angular.module('PreferencesService', [])
                 trackingPreferences = {
                     startupTrackingEnabled: true,
                     startupTrackable: defaultTrackable,
+                    backgroundTrackingEnabled: true,
                     batchesEnabled: true,
                     batchesSize: 2,
                     wifiOnly: false,
@@ -63,6 +64,21 @@ var PreferencesService = angular.module('PreferencesService', [])
             var trackingPreferences = self.loadDefaultPreferences();
             trackingPreferences.startupTrackable = trackable;
             window.localStorage.setItem('trackingPreferences', JSON.stringify(trackingPreferences));
+        };
+
+        //get it back
+        self.getPreferableTrackable = function() {
+            var trackingPreferences = self.loadDefaultPreferences();
+            return trackingPreferences.startupTrackable;
+        };
+
+        self.stopTracking = function(trackable) {
+            self.previousTrackable = trackable;
+            alert("i want to stop tracking " + JSON.stringify(trackable));
+        };
+
+        self.getPreviousTrackable = function() {
+            return self.previousTrackable;
         };
 
         //this holds login data, like email, status and token

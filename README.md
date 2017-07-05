@@ -1,3 +1,4 @@
+ionic serve to run
 # Ionic and Google Maps Native SDK v2
 Starter using **Google Maps Native SDK v2** and **[Ionic Framework](http://ionicframework.com)** created by me.
 

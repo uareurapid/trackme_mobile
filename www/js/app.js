@@ -17,7 +17,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //if(!window.localStorage.getItem('serverLocation')) {
         //TODO for testing with the proxy on the browser, need to set localhost:8100 (this app and not the other!!!)
-            window.localStorage.setItem('serverLocation','http://trackme-app.herokuapp.com');//http://trackme.no-ip.net:8080
+        window.localStorage.setItem('serverLocation','http://trackme-app.herokuapp.com');//http://trackme.no-ip.net:8080
         //TODO use https https://trackme-app.herokuapp.com
         //}
 
@@ -72,6 +72,31 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             $cookies.remove('trackme_session');
             $state.go('front');
         };
+
+
+        //You are defining your events from .run part of your angular application.
+
+        //Therefore; to communicate with a controller; you need to use : - a global variable ($rootScope)
+        // on your app that is watched in your controller : this is an ugly solution; that I do not recommand
+        // - Broadcast / on an event in your app: this is the clean solution
+        $scope.$on('app-background-foreground', function(event, background) {
+
+            console.log('app-background-foreground ..... background? ' + background);
+            if(background && !$scope.savedPreferences.backgroundTrackingEnabled) {
+                alert("will try to stop tracking now");
+                //stop tracking now, restart afterwards on resume
+                $scope.currentTrackable  = Preferences.getPreferableTrackable();
+                Preferences.stopTracking($scope.currentTrackable);
+                GeoLocation.pauseTrackingLocation();
+            }
+            else if(!background && !$scope.savedPreferences.backgroundTrackingEnabled) {
+                alert("restart tracking again");
+                //restart tracking
+                if(Preferences.getPreviousTrackable() && !GeoLocation.isTrackingInProgress()) {
+                    GeoLocation.startTrackingLocation();
+                }
+            }
+        });
 
         // process the form
         $scope.performLogin = function() {
@@ -246,13 +271,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription,id);
             }
 
-            alert("device id/name: " + deviceIdentifier);
+            //alert("device id/name: " + deviceIdentifier);
 
             //Get all the user devices and see if this one was already added
             $scope.getUserDevices( function(data) {
                 var exists = false;
                 //callback function for success
-                alert("callback called with data: " + JSON.stringify(data));
+                //alert("callback called with data: " + JSON.stringify(data));
                 for (var i = 0; i < data.length; i++) {
                     if(data[i].deviceId==deviceIdentifier) {
                         exists = true;
@@ -287,7 +312,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     }
                     else {
                         //TODO alert the user, add/select trackable
-                        alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
+                        //alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
                     }
                 }
 
@@ -509,12 +534,34 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
     })
 
-.run(function($ionicPlatform, Device) {
+//Another solution would have to set your event listener right in the controller
+.run(function($ionicPlatform, $rootScope) {
 
-
+// Wait for device API libraries to load
 
   $ionicPlatform.ready(function() {
 
+
+      // Handle the resume event
+      //
+      var onResume = function() {
+          console.log("app on resume (Foreground)");
+          $rootScope.$broadcast('app-background-foreground',false);
+      };
+
+      var onPause = function() {
+          // Handle the pause event
+          console.log("app on pause (Background)");
+          $rootScope.$broadcast('app-background-foreground',true);
+      };
+
+      document.addEventListener("resume", onResume, false);
+      document.addEventListener("pause", onPause, false);
+
+
+
+      // device APIs are available
+      //
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)

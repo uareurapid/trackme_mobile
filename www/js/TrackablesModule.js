@@ -84,6 +84,7 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
     $scope.stopTracking = function(trackable){
 
+        $scope.previousTrackable = trackable;
         var defaultTrackable = {
             name: "",
             description: "",

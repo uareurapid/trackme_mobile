@@ -12,7 +12,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
 
         //models for the checkboxes
         $scope.wifiOnly = { checked: true };
-        $scope.allowSMS = { checked: false };
+        //$scope.allowSMS = { checked: false };
         $scope.batchesSending = { checked: true} ;
         $scope.batchSize = 2;
         $scope.startupTracking = {checked: true} ;
@@ -49,8 +49,10 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
             trackingPreferences.batchesEnabled = $scope.batchesSending.checked;
             trackingPreferences.batchesSize = $scope.batches.size;
             trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
-            trackingPreferences.allowSMS = $scope.allowSMS.checked;
+            //trackingPreferences.allowSMS = $scope.allowSMS.checked;
             trackingPreferences.trackingInterval = $scope.trackingInterval.minutes;
+
+            trackingPreferences.backgroundTrackingEnabled = $scope.backgroundTracking.checked;
 
             window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
         };
@@ -76,7 +78,9 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
             $scope.batches.size = trackingPreferences.batchesSize;
             $scope.wifiOnly.checked = trackingPreferences.wifiOnly;
 
-            $scope.allowSMS.checked = trackingPreferences.allowSMS;
+            //$scope.allowSMS.checked = trackingPreferences.allowSMS;
+
+            $scope.backgroundTracking.checked = trackingPreferences.backgroundTrackingEnabled;
 
             $scope.trackingInterval.minutes = trackingPreferences.trackingInterval;
 
@@ -99,7 +103,12 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
         ];
 
         $scope.backgroundTrackingChanged =  function() {
+            var trackingPreferences = Preferences.loadDefaultPreferences();
+            if(trackingPreferences) {
+                trackingPreferences.backgroundTrackingEnabled = $scope.backgroundTracking.checked;
+                window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
 
+            }
         };
 
         $scope.wifiOnlyChanged =  function() {
@@ -108,13 +117,13 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
             if(trackingPreferences) {
                 trackingPreferences.wifiOnly = $scope.wifiOnly.checked;
                 //if wifi only, disable SMS
-                trackingPreferences.allowSMS = !trackingPreferences.wifiOnly;
-                $scope.allowSMS.checked = trackingPreferences.allowSMS;
+                //trackingPreferences.allowSMS = !trackingPreferences.wifiOnly;
+                //$scope.allowSMS.checked = trackingPreferences.allowSMS;
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
         };
 
-        $scope.allowSMSChanged =  function() {
+        /*$scope.allowSMSChanged =  function() {
 
             if(!$scope.allowSMS.checked && !$scope.wifiOnly.checked) {
 
@@ -134,7 +143,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
                 trackingPreferences.allowSMS = $scope.allowSMS.checked;
                 window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
             }
-        };
+        };*/
 
         $scope.startupTrackingChanged = function() {
 
