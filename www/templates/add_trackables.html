@@ -9,9 +9,11 @@
                 <label for="trackable_name">Name:</label>
                 <input id="trackable_name" type="text" class="form-control input-sm" placeholder="name" ng-model="formTrackablesData.name">
 
+                <br/>
                 <label for="trackable-description">Description:</label>
                 <input id="trackable-description" type="text" class="form-control input-sm" placeholder="description" ng-model="formTrackablesData.description">
 
+                <br/>
                 <label for="trackable-type">Type:</label>
 
                 <select id="trackable-type" ng-init="formTrackablesData.type = formTrackablesData.typeOptions[0]"
@@ -21,14 +23,16 @@
 
                 <!-- privacy options-->
                 <br/>
+                <p><br/>
                 <label>Privacy:</label>
                 <div class="form-group">
-                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Private" ng-checked="true" ng-model="formTrackablesData.privacy">Private</label>
-                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Protected" ng-model="formTrackablesData.privacy">Protected</label>
-                    <label><input type="radio" ng-change="privacyChanged()" name="privacy" value="Public" ng-model="formTrackablesData.privacy">Public</label>
+                    <input id="private" type="radio" ng-change="privacyChanged()" name="privacy" value="Private" ng-checked="true" ng-model="formTrackablesData.privacy"><label for="private">&nbsp;Private</label><br/>
+                    <input id="protected" type="radio" ng-change="privacyChanged()" name="privacy" value="Protected" ng-model="formTrackablesData.privacy"><label for="protected">&nbsp;Protected</label><br/>
+                    <input id="public" type="radio" ng-change="privacyChanged()" name="privacy" value="Public" ng-model="formTrackablesData.privacy"><label for="public">&nbsp;Public</label>
                 </div>
                 <!-- this is filled when the trackable is set to 'protected'-->
                 <!--<input name="trackable_unlockcode" id="trackable_unlockcode" type="hidden" size="20" value="" ng-model="formTrackablesData.unlockCode">-->
+                </p>
                 <br/>
                 <button type="submit" class="btn btn-primary btn-sm" ng-click="createTrackable()">Add trackable</button>
             </form>

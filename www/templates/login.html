@@ -20,18 +20,18 @@
             </div>
 
             <ion-toggle ng-model="rememberMe.checked"
-                        ng-change="rememberMeChanged()">
-                Remember me
+                        ng-change="rememberMeChanged()" ng-checked="rememberMe.checked">
+                {{rememberMe.text}}
             </ion-toggle>
             <ion-toggle ng-model="keepMeLoggedin.checked"
-                 ng-change="keepMeLoggedinChanged()">
-                Keep me Logged In
+                 ng-change="keepMeLoggedinChanged()" ng-checked="keepMeLoggedin.checked">
+                {{keepMeLoggedin.text}}
             </ion-toggle>
 
                 <div class="range" id="green" ng-show="keepMeLoggedin.checked">
-                    <b>For {{loogedInInterval.minutes}} day(s)</b>
+                    <b>For {{loogedInInterval.days}} day(s)</b>
                     <i class="icon ion-ios7-lightbulb-outline"></i>
-                    <input type="range" min="1" max="100" name="minutes" ng-model="loogedInInterval.minutes">
+                    <input type="range" min="1" max="5" name="days" ng-model="loogedInInterval.days">
                     <i class="icon ion-ios7-lightbulb"></i>
                 </div>
 

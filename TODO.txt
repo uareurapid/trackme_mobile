@@ -1,0 +1,19 @@
+web version
+
+Allow Update trackable privacy and description - not urgent
+Allow update device description - not urgent
+Check the quick tour, only show first time or on demand - not urgent
+geofence? - not urgent
+limit number of records return by the API - not urgent (done, need to test)
+add pagination - not urgent
+
+Show feedback messages when adding trackables/devices etc -> priority (done need css only)
+
+mobile version
+
+allow share by sms message - not urgent
+Allow Update trackable privacy and description ? - not urgent
+Allow update device description ? - not urgent
+find a replacement for the map symbols use start end falgs or something?
+Update the wizard - priority
+Keep me logged in stuff (check token/session expiration) - priority

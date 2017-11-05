@@ -96,6 +96,10 @@ var PreferencesService = angular.module('PreferencesService', [])
             }
         };
 
+        self.removeUserData = function() {
+            window.localStorage.removeItem('userData');
+        };
+
         //this holds only credentials (user + pass)
         self.loadSavedCredentials = function() {
             var credentials = window.localStorage.getItem('userCredentials');
@@ -112,6 +116,30 @@ var PreferencesService = angular.module('PreferencesService', [])
             };
             //add to local storage
             window.localStorage.setItem('userCredentials',JSON.stringify(userCredentials));
+        };
+
+        self.saveUserPreferences = function(rememberMe,keepMeLoggedin,loogedInInterval, lastLoginDate) {
+            /*
+             userPreferences.rememberMe;
+             $scope.keepMeLoggedin = userPreferences.keepMeLoggedin;
+             $scope.loogedInInterval = userPreferences.loogedInInterval;
+             */
+            var userPreferences= {
+                rememberMe: rememberMe,//true or false
+                keepMeLoggedin: keepMeLoggedin, //true or false
+                loogedInInterval:loogedInInterval,//in days (1 <--> 5)
+                lastLoginDate: lastLoginDate //in millis
+            };
+            //add to local storage
+            window.localStorage.setItem('userPreferences',JSON.stringify(userPreferences));
+        };
+
+        self.loadSavedUserPreferences = function() {
+            var userPreferences = window.localStorage.getItem('userPreferences');
+            if(userPreferences) {
+                userPreferences = JSON.parse(userPreferences);
+            }
+            return userPreferences;
         };
 
         self.saveDefaultDevice = function(deviceIdentifier,deviceDescription, id) {

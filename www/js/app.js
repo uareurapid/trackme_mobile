@@ -21,10 +21,10 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         //TODO use https https://trackme-app.herokuapp.com
         //}
 
-        $scope.rememberMe = { checked: true };
-        $scope.keepMeLoggedin = { checked: true };
+        $scope.rememberMe = { checked: true, text:'Remember me' };
+        $scope.keepMeLoggedin = { checked: true, text: 'Keep me Logged In' };
 
-        $scope.loogedInInterval = { 'minutes' : '50' };
+        $scope.loogedInInterval = { 'days' : '5' };
 
         $scope.loggedin_user = "";
 
@@ -54,22 +54,72 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             $scope.formLogin.pass =  credentials.password;
         }
 
-        ///loads default saved settings
+        //for the keep me logged in stuff
+        var lastLoginDate = null;
+
+        //get user session preferences
+        var userPreferences = Preferences.loadSavedUserPreferences();
+        if(userPreferences) {
+            $scope.rememberMe.checked = userPreferences.rememberMe;
+            $scope.keepMeLoggedin.checked = userPreferences.keepMeLoggedin;
+            $scope.loogedInInterval.days = userPreferences.loogedInInterval;
+            //in millis
+            lastLoginDate = userPreferences.lastLoginDate;
+        }
+
+
+        if($scope.keepMeLoggedin.checked) {
+            //TODO check the expiration settings or wait for the server to say something???
+            //server should handle it, we should handle the response from server (probably a 401 or 403)
+
+            var userData = Preferences.getUserData();
+            if(userData) {
+
+                $scope.status = userData.status;
+                $scope.email = userData.email;
+                $scope.expires = userData.expires;
+                $scope.token = userData.token;
+
+                var now = new Date().getTime();
+                //expires is in minutes so i need to convert it to milliseconds
+                if( (lastLoginDate + ($scope.expires*60*1000) > now) == false ) {
+                    //still valid token/session
+                    //go straight to the home page
+                    $state.go('app.home');
+                }
+                //else //already expired, proceed normally
+            }
+
+        }
+
+        ///loads default saved tracking settings
         $scope.savedPreferences = Preferences.loadDefaultPreferences();
 
         //remember me option changed
         $scope.rememberMeChanged =  function() {
-
+            if($scope.rememberMe.checked == true) {
+                $scope.rememberMe.checked = false;
+            }
+            else {
+                $scope.rememberMe.checked = true;
+            }
         };
 
         $scope.keepMeLoggedinChanged =  function() {
-
+            if($scope.keepMeLoggedin.checked == true) {
+                $scope.keepMeLoggedin.checked = false;
+            }
+            else {
+                $scope.keepMeLoggedin.checked = true;
+            }
         };
 
         $scope.logout = function() {
 
             // Removing a cookie
             $cookies.remove('trackme_session');
+            //remove the user data too (to avoid auto login next time, cause i explicitly logged out)
+            Preferences.removeUserData();
             $state.go('front');
         };
 
@@ -110,7 +160,8 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                         str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
                     return str.join("&");
                 },
-                data: {email: $scope.formLogin.user, password: $scope.formLogin.pass},
+                //note the expire_session is in minutes (between 1 day and 5 days max)
+                data: {email: $scope.formLogin.user, password: $scope.formLogin.pass, expire_session: ($scope.loogedInInterval.days*24*60) },
                 headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
             })
             //$http.post(server, $scope.formLogin)
@@ -120,6 +171,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     if (data.status) {
 
                         console.log('response:' + JSON.stringify(data));
+
+
+                        //save user prefs for next time
+                        Preferences.saveUserPreferences($scope.rememberMe.checked,
+                            $scope.keepMeLoggedin.checked,
+                            $scope.loogedInInterval.days,
+                            new Date().getTime());
 
                         //to show on the account menu
                         $scope.loggedin_user = data.email;
