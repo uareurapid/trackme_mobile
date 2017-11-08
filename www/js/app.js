@@ -490,8 +490,8 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
             .state('app', {
                 url: "/app",
-                abstract: true,
-                templateUrl: "templates/menu.html",
+                abstract: true,//true is not navigatable
+                templateUrl: "templates/menu.html"
             })
 
             .state('app.settings', {

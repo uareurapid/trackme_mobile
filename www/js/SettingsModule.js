@@ -192,6 +192,7 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
                     GeoLocation.stopTrackingLocation();
 
                 }
+                alert("Start tracking " + $scope.defaultTrackable.name);
                 //restart tracking with new settings
                 GeoLocation.startTrackingLocation();
             }else alert("do nothing");

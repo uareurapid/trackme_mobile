@@ -191,3 +191,7 @@
 #green i {
     color: #00ff00;
 }
+
+.bold_font {
+    font-weight: bold;
+}

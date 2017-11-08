@@ -123,6 +123,9 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
 
           }).error(function(data) {
               console.log('Error: ' + data);
+              if(data.err) {
+                 alert(data.err);
+              }
           });
      };
 

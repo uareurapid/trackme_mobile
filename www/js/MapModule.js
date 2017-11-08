@@ -211,7 +211,7 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
         });
 
         $scope.trackableChanged = function(trackableFilter) {
-            alert($scope.selectedTrackable);
+            //alert($scope.selectedTrackable);
             if(window.plugin) {
 
                 var userData = Preferences.getUserData();
@@ -324,7 +324,7 @@ angular.module('trackme.MapController', ['ionic','ionic-material','PreferencesSe
         $scope.deviceChanged = function(deviceFilter) {
 
             //if(window.plugin) {
-            alert(deviceFilter);
+            //alert(deviceFilter);
 
                 var userData = Preferences.getUserData();
                 console.log("mapmodule: getting all available devices for username: " + userData.email);

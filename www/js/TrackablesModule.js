@@ -6,7 +6,7 @@
 
 angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material','PreferencesService'])
 
-.controller('TrackablesController',function ($scope, /*$cookies,*/ $http, $ionicPopover, Preferences) {
+.controller('TrackablesController',function ($scope, $state, /*$cookies,*/ $http, $ionicPopover, $ionicSideMenuDelegate, Preferences) {
 
     $scope.testme = function() {
         $scope.$emit("testme", {});
@@ -203,10 +203,14 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
             .success(function(data) {
                 console.log("ADD TRACKABLE RESPONSE: " + data);
                 //get them all again and clear the form fields
-                $scope.getAllTrackables();
+                //$scope.getAllTrackables();
+                $ionicSideMenuDelegate.toggleLeft();
             })
             .error(function(data) {
-                console.log('Error: ' + data);
+                console.log('Error: ' + JSON.stringify(data));
+                if(data.err) {
+                    alert(data.err);
+                }
             });
 
     };
