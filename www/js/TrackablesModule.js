@@ -4,9 +4,9 @@
 
 //trackables controller
 
-angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material','PreferencesService'])
+angular.module('trackme.TrackablesController',['trackme.MapController','ionic','ionic-material','PreferencesService','GeoLocationService'])
 
-.controller('TrackablesController',function ($scope, $state, /*$cookies,*/ $http, $ionicPopover, $ionicSideMenuDelegate, Preferences) {
+.controller('TrackablesController',function ($scope, $state, /*$cookies,*/ $http, $ionicPopover, $ionicSideMenuDelegate, Preferences, GeoLocation) {
 
     $scope.testme = function() {
         $scope.$emit("testme", {});
@@ -77,8 +77,22 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
     //TODO CODE ME
     $scope.startTracking = function(trackable){
+
      if(trackable) {
+         alert("start tracking ");
          Preferences.setPreferableTrackable(trackable);
+         //if already tracking...
+         if(GeoLocation.isTrackingInProgress()) {
+             //then stop the current tracking
+             GeoLocation.stopTrackingLocation();
+
+         }
+         //restart tracking with new settings
+         GeoLocation.startTrackingLocation();
+     }
+
+     if($scope.popover) {
+         $scope.popover.hide();
      }
     };
 
@@ -94,6 +108,17 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
         };
         Preferences.setPreferableTrackable(defaultTrackable);
+
+        //if already tracking...
+        if(GeoLocation.isTrackingInProgress()) {
+            //then stop the current tracking
+            GeoLocation.stopTrackingLocation();
+
+        }
+
+        if($scope.popover) {
+            $scope.popover.hide();
+        }
     };
 
     $scope.isBeingTracked = function(trackable) {
@@ -217,7 +242,7 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
 
     //select a startup trackable
     $scope.selectStartupTrackable = function(trackable) {
-        console.log("selected startup trackable: " + JSON.stringify(trackable));
+        alert("selected startup trackable: " + JSON.stringify(trackable));
 
         //TODO direct mapping here, carefull, check this
         var trackingPreferences = window.localStorage.getItem('trackingPreferences');
@@ -227,6 +252,16 @@ angular.module('trackme.TrackablesController',['trackme.MapController','ionic','
             window.localStorage.setItem('trackingPreferences',JSON.stringify(trackingPreferences));
 
         }
+
+        //if already tracking...
+        //if(GeoLocation.isTrackingInProgress()) {
+            //then stop the current tracking
+        //    GeoLocation.stopTrackingLocation();
+
+        //}
+        //alert("Start tracking " + trackable.name);
+        //restart tracking with new settings
+        //GeoLocation.startTrackingLocation();
     };
 
     // delete a trackable after checking it

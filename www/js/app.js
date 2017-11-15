@@ -23,7 +23,6 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         $scope.rememberMe = { checked: true, text:'Remember me' };
         $scope.keepMeLoggedin = { checked: true, text: 'Keep me Logged In' };
-
         $scope.loogedInInterval = { 'days' : '5' };
 
         $scope.loggedin_user = "";
@@ -47,12 +46,13 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         $scope.formLogin.user = "";
         $scope.formLogin.pass = "";
 
-        var credentials = Preferences.loadSavedCredentials();
-        if(credentials) {
-            $scope.formLogin.user = credentials.username;
-            $scope.loggedin_user = credentials.username;
-            $scope.formLogin.pass =  credentials.password;
-        }
+        //SIGNUP FORM
+        $scope.formSignup = {
+
+            email : "",
+            password : "",
+            retypePassword: ""
+        };
 
         //for the keep me logged in stuff
         var lastLoginDate = null;
@@ -61,12 +61,20 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         var userPreferences = Preferences.loadSavedUserPreferences();
         if(userPreferences) {
             $scope.rememberMe.checked = userPreferences.rememberMe;
-            $scope.keepMeLoggedin.checked = userPreferences.keepMeLoggedin;
+            $scope.keepMeLoggedin.checked =userPreferences.keepMeLoggedin;
             $scope.loogedInInterval.days = userPreferences.loogedInInterval;
             //in millis
             lastLoginDate = userPreferences.lastLoginDate;
         }
 
+        if($scope.rememberMe.checked) {
+            var credentials = Preferences.loadSavedCredentials();
+            if(credentials) {
+                $scope.formLogin.user = credentials.username;
+                $scope.loggedin_user = credentials.username;
+                $scope.formLogin.pass =  credentials.password;
+            }
+        }
 
         if($scope.keepMeLoggedin.checked) {
             //TODO check the expiration settings or wait for the server to say something???
@@ -97,21 +105,12 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         //remember me option changed
         $scope.rememberMeChanged =  function() {
-            if($scope.rememberMe.checked == true) {
-                $scope.rememberMe.checked = false;
-            }
-            else {
-                $scope.rememberMe.checked = true;
-            }
+            //this is just an event called, the value was already changed
+
         };
 
         $scope.keepMeLoggedinChanged =  function() {
-            if($scope.keepMeLoggedin.checked == true) {
-                $scope.keepMeLoggedin.checked = false;
-            }
-            else {
-                $scope.keepMeLoggedin.checked = true;
-            }
+            //this is just an event called, the value was already changed
         };
 
         $scope.logout = function() {
@@ -377,56 +376,88 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             });
         };
 
+        //validates the email
+        var validateEmail = function (email) {
+
+            var exp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if( exp.test(email) === false ) {
+                return false;
+            }
+            return true;
+        };
+
+        $scope.checkPasswordsMatch = function() {
+
+            alert("checkPasswordsMatch");
+            //TODO validate email
+            var ok = validateEmail($scope.formSignup.email) && $scope.formSignup.password === $scope.formSignup.retypePassword &&
+                $scope.formSignup.password.length > 6; //min 6 characters
+                alert("check match" + ok);
+            return ok;
+        };
+
         // process the form
         $scope.performSignup = function() {
 
-            $http({
-                method  : 'POST',
-                url     : serverSignup,
-                transformRequest: function(obj) {
-                    var str = [];
-                    for(var p in obj)
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    return str.join("&");
-                },
-                data: {email: $scope.formLogin.user, password: $scope.formLogin.pass},
-                headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
-            })
-                //$http.post(server, $scope.formLogin)
-                .success(function(data) {
-                    console.log(data);
+            if($scope.checkPasswordsMatch() ) {
+                $http({
+                    method  : 'POST',
+                    url     : serverSignup,
+                    transformRequest: function(obj) {
+                        var str = [];
+                        for(var p in obj)
+                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                        return str.join("&");
+                    },
+                    data: {email: $scope.formSignup.email, password: $scope.formSignup.password},
+                    headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  // set the headers so angular passing info as form data (not request payload)
+                })
+                    //$http.post(server, $scope.formLogin)
+                    .success(function(data) {
+                        console.log(data);
 
-                    if (data.status) {
+                        if (data.status) {
 
-                        console.log('response:' + JSON.stringify(data));
+                            console.log('response:' + JSON.stringify(data));
 
-                        // if successful, bind success message to message
-                        $scope.status = data.status;
-                        $scope.email = data.email;
-                        $scope.expires = data.expires;
-                        $scope.token = data.token;
+                            // if successful, bind success message to message
+                            $scope.status = data.status;
+                            $scope.email = data.email;
+                            $scope.expires = data.expires;
+                            $scope.token = data.token;
 
-                        var userData = {
-                            status: data.status,
-                            email: data.email,
-                            expires: data.expires,
-                            token: data.token
-                        };
+                            var userData = {
+                                status: data.status,
+                                email: data.email,
+                                expires: data.expires,
+                                token: data.token
+                            };
 
 
-                        window.localStorage.setItem( 'userData',JSON.stringify(userData));
-                        console.log("navigate to devices");
-                        //$state.go('devices');
+                            window.localStorage.setItem( 'userData',JSON.stringify(userData));
+                            console.log("navigate to devices");
+                            //$state.go('devices');
 
-                        $state.go('app');
-                        //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
+                            $state.go('app.home');
+                            //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq
 
-                    }
+                        }
 
-                    //http://blog.ionic.io/handling-cors-issues-in-ionic/
-                    //http://stackoverflow.com/questions/24710503/how-do-i-post-urlencoded-form-data-with-http-in-angularjs
+                        //http://blog.ionic.io/handling-cors-issues-in-ionic/
+                        //http://stackoverflow.com/questions/24710503/how-do-i-post-urlencoded-form-data-with-http-in-angularjs
 
-                });
+                    })
+                    .error(function(data) {
+                        console.log('Signup Error: ' + JSON.stringify(data));
+                    });
+            }
+            else {
+                alert("the email is not valid or the passwords do not match!");
+            }
+
+
+
+
         };
 
         $scope.next = function() {

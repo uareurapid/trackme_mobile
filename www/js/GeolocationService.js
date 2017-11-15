@@ -85,6 +85,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                     }
 
                     if(batchPayload.length < size) {
+                        alert("just add the record to the batch, but do not send it yet");
                         //just add the record to the batch, but do not send it yet
                         batchPayload.push(payload);
                         //save updated version
@@ -92,6 +93,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                         return;
                     }
                     else {
+                        alert("send it now, not batch");
                         //send the batch and clear it afterwards
                         //batch is full
                         send(batchPayload, true);
@@ -129,6 +131,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
 
                 //send the record to the server
                 //if is in batch, wait until is fill
+                alert("send record");
                 self.sendRecordToServer(position);
             };
 
@@ -158,6 +161,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
         //start traking
         self.startTrackingLocation = function() {
 
+            alert("startTrackingLocation...");
             self.isTracking = true;
 
             self.trackingPreferences = Preferences.loadDefaultPreferences();

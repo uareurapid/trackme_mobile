@@ -1,12 +1,15 @@
 <ion-view view-title="Sign up">
     <ion-content class="padding" ng-controller="MainController">
-        <form ng-submit="performSignup()">
+        <form ng-model="formSignup" onsubmit="return checkPasswordsMatch()" ng-submit="performSignup()">
             <div class="list">
                 <label class="item item-input">
-                    <input type="email" placeholder="Email">
+                    <input type="email" placeholder="Email" ng-model="formSignup.email" ng-required="true">
                 </label>
                 <label class="item item-input">
-                    <input type="password" placeholder="Password">
+                    <input type="password" placeholder="Password" ng-model="formSignup.password" ng-required="true">
+                </label>
+                <label class="item item-input">
+                    <input type="password" placeholder="Re-type Password" ng-model="formSignup.retypePassword" ng-required="true">
                 </label>
             </div>
             <button class="button button-royal button-block">Sign up</button>

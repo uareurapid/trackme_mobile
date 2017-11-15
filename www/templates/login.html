@@ -19,12 +19,10 @@
                 Options
             </div>
 
-            <ion-toggle ng-model="rememberMe.checked"
-                        ng-change="rememberMeChanged()" ng-checked="rememberMe.checked">
+            <ion-toggle ng-model="rememberMe.checked" ng-change="rememberMeChanged()">
                 {{rememberMe.text}}
             </ion-toggle>
-            <ion-toggle ng-model="keepMeLoggedin.checked"
-                 ng-change="keepMeLoggedinChanged()" ng-checked="keepMeLoggedin.checked">
+            <ion-toggle ng-model="keepMeLoggedin.checked" ng-change="keepMeLoggedinChanged()">
                 {{keepMeLoggedin.text}}
             </ion-toggle>
 
@@ -34,9 +32,6 @@
                     <input type="range" min="1" max="5" name="days" ng-model="loogedInInterval.days">
                     <i class="icon ion-ios7-lightbulb"></i>
                 </div>
-
-
-
 
 
             <input type="submit" class="button button-royal button-block" value="Log in"/>
