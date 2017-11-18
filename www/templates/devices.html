@@ -6,12 +6,13 @@
                 <ul class="list">
                     <li class="item" ng-repeat="device in devices" ng-click="openDeviceDetails($event,device)">
                         {{device.description}}
+                        <span ng-show="isCurrentDevice(device)"><b>(current device)</b></span>
                     </li>
                 </ul>
 
                 <script id="device_detail.html" type="text/ng-template">
                     <ion-popover-view>
-                        <ion-header-bar>
+                        <ion-header-bar  class="bar bar-royal">
                             <h1 class="title">{{selectedDevice.description}}</h1>
                         </ion-header-bar>
                         <ion-content>

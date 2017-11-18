@@ -74,7 +74,7 @@ var PreferencesService = angular.module('PreferencesService', [])
 
         self.stopTracking = function(trackable) {
             self.previousTrackable = trackable;
-            alert("i want to stop tracking " + JSON.stringify(trackable));
+            //alert("i want to stop tracking " + JSON.stringify(trackable));
         };
 
         self.getPreviousTrackable = function() {
@@ -158,6 +158,13 @@ var PreferencesService = angular.module('PreferencesService', [])
                 deviceData = JSON.parse(deviceData);
             }
             return deviceData;
+        };
+
+        //TODO this is updating wrong device... check the call
+        self.updateDefaultDevice = function(id) {
+            //alert("update default device with id: " + id);
+            var deviceData = self.loadDefaultDevice();
+            self.saveDefaultDevice(deviceData.deviceId,deviceData.deviceDescription,id);
         };
 
     });

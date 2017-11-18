@@ -162,9 +162,15 @@ angular.module('trackme.LoginController',['trackme.MapController','ionic','ionic
 
 
 
-                        //GeoLocation.startTrackingLocation();
 
-                        $scope.checkUserDevices();
+
+                        $scope.loadDefaultDevice();
+
+                        //start tracking right away
+                        if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
+                            GeoLocation.startTrackingLocation();
+                        }
+
 
 
                         //TODO use this https://medium.com/@petehouston/awesome-local-storage-for-ionic-with-ngstorage-c11c0284d658#.ndfefslhq

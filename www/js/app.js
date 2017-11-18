@@ -6,13 +6,13 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesController',
     'trackme.TrackablesController','trackme.MapController','trackme.SettingsController','trackme.LoginController',
-    'trackme.ProfileController','GeoLocationService','PreferencesService','ionic-material','ngCookies'])
+    'trackme.ProfileController','GeoLocationService','PreferencesService','DevicesService','ionic-material','ngCookies'])
 //removed 'trackme.GeoLocationController',
 
     //TODO check ionic material stuff
     //https://github.com/zachfitz/Ionic-Material
     //DEMO http://ionicmaterial.com/demo/
-    .controller('MainController', function($scope, $http, $state, $ionicHistory, $cookies, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation, Preferences) {
+    .controller('MainController', function($scope, $http, $state, $ionicHistory, $cookies, $ionicSideMenuDelegate, $ionicSlideBoxDelegate, $ionicPopup, GeoLocation, Preferences, DevicesService) {
 
 
         //if(!window.localStorage.getItem('serverLocation')) {
@@ -21,11 +21,17 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
         //TODO use https https://trackme-app.herokuapp.com
         //}
 
+
+        ///loads default saved tracking settings
+        $scope.savedPreferences = Preferences.loadDefaultPreferences();
+
         //automatic login?
         //for the keep me logged in stuff
         var lastLoginDate = null;
         var automaticLogin = false;
+
         var userPreferences = Preferences.loadSavedUserPreferences();
+
         if(userPreferences) {
             lastLoginDate = userPreferences.lastLoginDate;
 
@@ -48,9 +54,12 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                         //still valid token/session
                         //go straight to the home page
                         automaticLogin = true;
-                        alert("auto login, clean preference on direct logout");
                         $cookies.put('trackme_session',userData);
                         $state.go('app.home');
+
+                        if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
+                            GeoLocation.startTrackingLocation();
+                        }
                     }
                     //else //already expired, proceed normally
                 }
@@ -70,9 +79,6 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
 
         var serverLocation = window.localStorage.getItem('serverLocation');
 
-
-        ///loads default saved tracking settings
-        $scope.savedPreferences = Preferences.loadDefaultPreferences();
 
         $scope.logout = function() {
 
@@ -110,7 +116,7 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                 if(Preferences.getPreviousTrackable() && !GeoLocation.isTrackingInProgress()) {
                     GeoLocation.startTrackingLocation();
                 }
-            }
+            }//else keep tracking
         });
 
 
@@ -184,8 +190,10 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             });
         };
 
-        $scope.checkUserDevices = function() {
 
+        $scope.loadDefaultDevice = function() {
+            alert("loadDefaultDevice on app.js");
+            //first get the current device if any, otherwise save this info as the current one
             var currentDevice = Preferences.loadDefaultDevice();
 
             //default dummy stuff
@@ -205,57 +213,68 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
                     deviceIdentifier = device.uuid;
                     deviceDescription = device.name;
                 }
-
                 //save it! (will get the database id later, after success)
                 Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription,id);
+                alert("save default: " + JSON.stringify(Preferences.loadDefaultDevice()));
+
+
+                alert("use devices service other");
+                DevicesService.getAllUserDevices(function(data) {
+                    $scope.checkExistingDevices(data, deviceIdentifier, deviceDescription);
+                });
             }
 
-            //alert("device id/name: " + deviceIdentifier);
+        };
 
-            //Get all the user devices and see if this one was already added
-            $scope.getUserDevices( function(data) {
-                var exists = false;
-                //callback function for success
-                //alert("callback called with data: " + JSON.stringify(data));
-                for (var i = 0; i < data.length; i++) {
-                    if(data[i].deviceId==deviceIdentifier) {
-                        exists = true;
-                        console.log("this device already exists: name " + data[i].deviceId);
-                        break;
-                    }
+        //Get all the user devices and see if this one was already added
+        //this is being called from somewhere else
+        $scope.checkExistingDevices = function(devicesData, deviceIdentifier, deviceDescription) {
+            alert("getUserDevices check if exists already");
+
+            var exists = false;
+            //callback function for success
+            //alert("callback called with data: " + JSON.stringify(data));
+            for (var i = 0; i < devicesData.length; i++) {
+                if( devicesData[i].deviceId == deviceIdentifier || devicesData[i].deviceDescription == deviceDescription) {
+                    exists = true;
+                    Preferences.updateDefaultDevice(devicesData[i]._id);
+                    //TODO update the id
+                    console.log("this device already exists: name " + devicesData[i].deviceId);
+                    break;
                 }
-                if(!exists) {
+            }
+            alert(exists);
+            if(!exists) {
 
 
-                    //------------------- SAVE DEVICE ----------------------------
+                //------------------- SAVE DEVICE ----------------------------
 
-                    //prompt the user to add this new device, and go to de devices page, with the device data already with default values prefilled
-                    $scope.showConfirm( function() {
-                            //user confirmed
-                            //Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
-                            //save data for form prefill();
+                //prompt the user to add this new device, and go to de devices page, with the device data already with default values prefilled
+                $scope.showConfirm( function() {
+                        //user confirmed
+                        //Preferences.saveDefaultDevice(deviceIdentifier,deviceDescription);
+                        //save data for form prefill();
 
-                            //navigate
-                            $state.go('app.add_devices');
-                        },
-                        function () {
-                            //user denied, do nothing
-                            $scope.alertImpossibleTrackWithDevice();
-                        });
-                    //--------------------------------------------------------------
+                        //navigate
+                        $state.go('app.add_devices');
+                    },
+                    function () {
+                        //user denied, do nothing
+                        $scope.alertImpossibleTrackWithDevice();
+                    });
+                //--------------------------------------------------------------
+            }
+            else {
+                //device already exists, start tracking on startup?
+                if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
+                    GeoLocation.startTrackingLocation();
                 }
                 else {
-                    //device already exists, start tracking on startup?
-                    if($scope.savedPreferences.startupTrackingEnabled && $scope.savedPreferences.startupTrackable.name) {
-                        GeoLocation.startTrackingLocation();
-                    }
-                    else {
-                        //TODO alert the user, add/select trackable
-                        //alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
-                    }
+                    //TODO alert the user, add/select trackable
+                    //alert("do nothing!!!! " + $scope.savedPreferences.startupTrackingEnabled + " " + $scope.savedPreferences.startupTrackable.name);
                 }
+            }
 
-            });
         };
 
 

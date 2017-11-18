@@ -18,12 +18,6 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
         $scope.startupTracking = {checked: true} ;
         $scope.backgroundTracking = {checked: true} ;
 
-        $scope.data =  {
-            startupChoice : STARTUP_CHOICE_CHOOSE_LATER_VALUE
-            //cdt
-        };
-
-
         //every 5 minutes interval
         $scope.trackingInterval = { minutes: 5};
 
@@ -92,7 +86,13 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
 
         //check if we have a default trackable
         var hasDefaultTrackable = function() {
-          return  $scope.defaultTrackable.name.length > 0;
+            return  $scope.defaultTrackable.name.length > 0;
+        };
+
+
+        $scope.data =  {
+            startupChoice : hasDefaultTrackable() ? STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE : STARTUP_CHOICE_CHOOSE_LATER_VALUE
+            //cdt
         };
 
         //create the options list

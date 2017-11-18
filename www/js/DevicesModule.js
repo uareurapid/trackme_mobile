@@ -2,9 +2,9 @@
  * Created by paulocristo on 09/05/16.
  */
 
-angular.module('trackme.DevicesController', ['ionic','ionic-material','PreferencesService'])
+angular.module('trackme.DevicesController', ['ionic','ionic-material','PreferencesService','DevicesService'])
 
-    .controller('DevicesController',function ($scope, $state, $http, $ionicPopover,Preferences) {
+    .controller('DevicesController',function ($scope, $state, $http, $ionicPopover,Preferences,DevicesService) {
 
     //clean the form fields
     $scope.formData = {};
@@ -12,6 +12,8 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
     $scope.formData.deviceDescription="";
 
     var serverLocation = window.localStorage.getItem('serverLocation');
+
+    var currentDevice = Preferences.loadDefaultDevice();
 
     $scope.selectedDevice = {
         owner: "",
@@ -66,6 +68,16 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
             .error(function (data) {
                 console.log('Error: ' + data);
             });
+    };
+
+    $scope.isCurrentDevice = function(device) {
+
+            if(device && currentDevice) {
+
+                return (currentDevice.deviceDescription == device.deviceDescription) ||
+                    (currentDevice.deviceId == device.deviceId);
+            }
+            return false;
     };
 
 
@@ -132,34 +144,9 @@ angular.module('trackme.DevicesController', ['ionic','ionic-material','Preferenc
     //############ GET ALL USER DEVICES ##################
     $scope.getUserDevices = function( callback ) {
 
-        var userData = JSON.parse( window.localStorage.getItem( 'userData'));
-        if(userData) {
-            console.log("devicesmodule: getting all available devices for username: " + userData.email);
-
-            var serverLocation = window.localStorage.getItem('serverLocation');
-            var apiPath = serverLocation +'/api/devices?owner=' + userData.email;
-
-            $http({
-                method  : 'GET',
-                url     : apiPath,
-                headers : { 'Authorization': 'Bearer ' + userData.token }  // set the headers so angular passing info as form data (not request payload)
-            })
-            //$http.get(apiPath)
-                .success(function(data) {
-                    $scope.devices = data;
-                    console.log(data);
-                    //send the data to the callback function
-                    if(callback && typeof callback === 'function') {
-                        callback(data);
-                    }
-                })
-                .error(function(data) {
-                    console.log('Error: ' + data);
-                });
-        }
-        else {
-            console.log("no user data");
-        }
+        DevicesService.getAllUserDevices(function(data) {
+            $scope.devices = data;
+        });
 
 
     };
