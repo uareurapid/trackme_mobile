@@ -1,60 +1,37 @@
 <ion-view view-title="Home" ng-controller="MainController">
     <ion-content scroll="false">
-        <!--       <div class="left">
-                   <button class="button button-positive button-clear no-animation icon ion-chevron-left"
-                           ng-click="" ng-if="!slideIndex">
-                   </button>
-                   <button class="button button-positive button-clear no-animation icon ion-chevron-left"
-                           ng-click="previous()" ng-if="slideIndex > 0">
 
-                   </button>
-               </div>
-       -->
-
-        <!-- <div class="right">
-             <button class="button button-positive button-clear no-animation icon ion-chevron-right"
-                     ng-click="next()" ng-if="!slideIndex">
-
-             </button>
-             <button class="button button-positive button-clear no-animation icon ion-chevron-right"
-                     ng-click="next()" ng-if="slideIndex>0">
-
-             </button>
-        </div>-->
-        <ion-slide-box does-continue="false"
+        <ion-slide-box ng-show="shouldShowIntro()" does-continue="false"
                        show-pager='true'
                        slide-interval="3000"
                        auto-play="false"
                        on-slide-changed="slideChanged(index)">
-            <!--<ion-slide ng-repeat="slide in slides">
-                <h3>{{slide.name}}</h3>-->
             <ion-slide>
-
                 <h3>keep track of what you love the most
                     <br/>
                     with just 3 simple steps!
                 </h3>
-                <img src="img/1.png"/>
+                <img src="img/1.png" style="max-width: 50%"/>
 
             </ion-slide>
             <ion-slide>
 
                 <h3>Add new trackables or devices</h3>
-                <img src="img/1.png"/>
+                <img src="img/1.png" style="max-width: 50%"/>
 
             </ion-slide>
 
             <ion-slide>
 
                 <h3>Choose your tracking preferences</h3>
-                <img src="img/2.png"/>
+                <img src="img/2.png" style="max-width: 50%"/>
 
             </ion-slide>
 
             <ion-slide>
 
                 <h3>Watch your trackables on the map</h3>
-                <img src="img/3.png"/>
+                <img src="img/3.png" style="max-width: 50%"/>
             </ion-slide>
 
 

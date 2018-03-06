@@ -21,7 +21,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
 
 
             //the call to the server API is here!
-            var send = function(payload, isBatch){
+            var send = function(payload, isBatch) {
 
                 var serverLocation = window.localStorage.getItem('serverLocation');
                 var apiPath = serverLocation +'/api/records';
@@ -84,17 +84,21 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
                       batchPayload = JSON.parse(batchPayload);
                     }
 
-                    //TODO this is adding one more to the batch, check the counter
+                    //still fit one more?
                     if(batchPayload.length < size) {
-                        //alert("just add the record to the batch, but do not send it yet");
                         //just add the record to the batch, but do not send it yet
                         batchPayload.push(payload);
-                        //save updated version
+
+                        //save updated version on local storage
                         window.localStorage.setItem('batchPayload', JSON.stringify(batchPayload));
+
+                        //check if we reached size with this new element, and send it if yes!
+                        if(batchPayload.length === size) {
+                            send(batchPayload, true);
+                        }
                         return;
                     }
                     else {
-                        //alert("send it now, not batch");
                         //send the batch and clear it afterwards
                         //batch is full
                         send(batchPayload, true);
@@ -159,10 +163,12 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
         };
 
         //start traking
+        //TODO start right away as soon as this is called, otherwie i only get th epermissions prompt after the first interval
         self.startTrackingLocation = function() {
 
             //alert("startTrackingLocation...");
             self.isTracking = true;
+            self.getCoordinates();
 
             self.trackingPreferences = Preferences.loadDefaultPreferences();
             var minutesInterval = self.trackingPreferences.trackingInterval || 2; //will default to 2 minutes while testing
@@ -189,7 +195,7 @@ var GeoLocationService = angular.module('GeoLocationService', ['PreferencesServi
             if(self.stopGeolocation) {
                 $interval.cancel(self.stopGeolocation);
                 self.stopGeolocation = undefined;
-                //alert("stop tracking called");
+            alert("stop tracking called");
             }
             self.isTracking = false;
         };

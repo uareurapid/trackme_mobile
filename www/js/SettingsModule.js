@@ -3,7 +3,7 @@
  */
 angular.module('trackme.SettingsController', ['ionic','ionic-material','PreferencesService','GeoLocationService'])
 
-    .controller('SettingsController',function ($scope, $http, $ionicModal, $ionicPopup, Preferences, GeoLocation) {
+    .controller('SettingsController',function ($scope, $http, $ionicModal, $ionicPopup, $ionicSideMenuDelegate, Preferences, GeoLocation) {
 
         var STARTUP_CHOICE_CHOOSE_LATER_VALUE = 'wcl';
         var STARTUP_CHOICE_CHOOSE_DEFAULT_VALUE = 'cdt';
@@ -195,7 +195,9 @@ angular.module('trackme.SettingsController', ['ionic','ionic-material','Preferen
                 alert("Start tracking " + $scope.defaultTrackable.name);
                 //restart tracking with new settings
                 GeoLocation.startTrackingLocation();
-            }else alert("do nothing");
+            }
+            alert("Settings saved!");
+            $ionicSideMenuDelegate.toggleLeft();
         };
 
 

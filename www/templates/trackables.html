@@ -22,7 +22,7 @@
                         <p><label class="bold_font" for="trackable_description">Description: </label><span id="trackable_description">{{selectedTrackable.description}}</span></p>
                         <p><label class="bold_font" for="trackable_type">Type: </label><span id="trackable_type">{{selectedTrackable.type}}</span></p>
                         <input type="button" value="Start tracking" ng-show="!isBeingTracked(selectedTrackable)" ng-click="startTracking(selectedTrackable)"/>
-                        <input type="button" value="Stop tracking" ng-show="isBeingTracked(selectedTrackable)" ng-click="startTracking(selectedTrackable)"/>
+                        <input type="button" value="Stop tracking" ng-show="isBeingTracked(selectedTrackable)" ng-click="stopTracking(selectedTrackable)"/>
                     </ion-content>
                 </ion-popover-view>
             </script>

@@ -294,6 +294,14 @@ angular.module('trackme', ['ionic','trackme.DeviceUtils','trackme.DevicesControl
             $scope.slideIndex = index;
         };
 
+        $scope.shouldShowIntro = function() {
+           var haShown = window.localStorage.getItem('hasShownIntro');
+           if(!haShown) {
+               window.localStorage.setItem('hasShownIntro', true);
+           }
+           return haShown ? false : true;
+        };
+
 
         /*$scope.$on("$ionicSlides.sliderInitialized", function(event, data){
             // data.slider is the instance of Swiper
